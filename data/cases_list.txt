@@ -1,0 +1,25 @@
+case01: simple value change
+case02: variable rename
+case03: added line
+case04: deleted line
+case05: reordered lines
+case06: line split
+case07: line merge
+case08: comment change
+case09: whitespace change
+case10: reordered functions
+case11: rename + reorder
+case12: added computation line
+case13: conditional wrapper
+case14: changed loop range
+case15: commented out line
+case16: modified print statement
+case17: inlined variable
+case18: different function body
+case19: added conditional
+case20: same as test 12 for consistency check
+case21: string addition in print
+case22: changed return value
+case23: extended list
+case24: added dictionary key
+case25: string modification in function
