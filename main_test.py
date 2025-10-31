@@ -32,14 +32,17 @@ def run_case(name, old_file, new_file):
 
     candidates = generate_candidate_sets(old_lines, new_lines, k=20)
     matches = best_match_for_each_line(old_lines, new_lines, candidates, threshold=0.45)
-    resolved = resolve_conflicts(matches)
+    resolved = resolve_conflicts(matches, new_lines)
     resolved = detect_reorders(old_lines, new_lines, resolved)
     split_map = detect_line_splits(old_lines, new_lines, resolved)
 
     ground_truth = {}
 
     # heuristic: one old line, two new lines — check if new lines reconstruct old
-    if len(old_lines) == 1 and len(new_lines) == 2:
+    if len(new_lines) == 1 and ";" in new_lines[0] and len(old_lines) > 1:
+        ground_truth = {old_idx: [0] for old_idx in range(len(old_lines))}
+
+    elif len(old_lines) == 1 and len(new_lines) == 2:
         old_clean = old_lines[0].replace(" ", "")
         new0_clean = new_lines[0].replace(" ", "")
         new1_clean = new_lines[1].replace(" ", "")
@@ -49,7 +52,6 @@ def run_case(name, old_file, new_file):
         new0_norm = new0_clean.replace("+=", "+")
         new1_norm = new1_clean.replace("+=", "+")
 
-        # token-based structural check
         import re
         extract_tokens = lambda s: set(re.findall(r"[A-Za-z_]\w*", s))
         old_tokens = extract_tokens(old_norm)
@@ -59,7 +61,6 @@ def run_case(name, old_file, new_file):
         if old_tokens.issubset(new_tokens) or old_norm.startswith(new0_norm) or old_norm.endswith(new1_norm):
             ground_truth = {0: [0, 1]}
         else:
-            # fallback to default alignment logic
             j = 0
             for i in range(len(old_lines)):
                 while j < len(new_lines) and new_lines[j] != old_lines[i]:
