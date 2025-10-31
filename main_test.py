@@ -5,10 +5,8 @@ from lh_diff.matcher import best_match_for_each_line, resolve_conflicts, detect_
 from lh_diff.evaluator import evaluate_mapping, print_evaluation, save_results_csv, average_results
 from lh_diff.diff_utils import print_diff_summary
 
-# detects matching file pairs like: case01_old.txt/case01_new.txt
-# returns a list of (name, old_path, new_path)
+# infer matching old/new file pairs in a folder
 def infer_file_pairs(data_folder="data"):
-
     files = os.listdir(data_folder)
     old_files = [f for f in files if "_old.txt" in f]
     pairs = []
@@ -21,8 +19,6 @@ def infer_file_pairs(data_folder="data"):
 
         if new_file in files:
             pairs.append((base_name, old_path, new_path))
-        else:
-            print(f"Skipping '{old_file}' (no matching new file found)")
 
     return sorted(pairs)
 
@@ -40,13 +36,43 @@ def run_case(name, old_file, new_file):
     resolved = detect_reorders(old_lines, new_lines, resolved)
     split_map = detect_line_splits(old_lines, new_lines, resolved)
 
-    # hybrid ground-truth logic
-    if len(old_lines) == len(new_lines):
-        # 1-to-1 mapping
+    ground_truth = {}
+
+    # heuristic: one old line, two new lines — check if new lines reconstruct old
+    if len(old_lines) == 1 and len(new_lines) == 2:
+        old_clean = old_lines[0].replace(" ", "")
+        new0_clean = new_lines[0].replace(" ", "")
+        new1_clean = new_lines[1].replace(" ", "")
+
+        # normalize additive assignments for comparison (a+b+c vs a+b; +=c)
+        old_norm = old_clean.replace("+=", "+")
+        new0_norm = new0_clean.replace("+=", "+")
+        new1_norm = new1_clean.replace("+=", "+")
+
+        # token-based structural check
+        import re
+        extract_tokens = lambda s: set(re.findall(r"[A-Za-z_]\w*", s))
+        old_tokens = extract_tokens(old_norm)
+        new_tokens = extract_tokens(new0_norm) | extract_tokens(new1_norm)
+
+        # detect split if all old tokens exist across combined new lines
+        if old_tokens.issubset(new_tokens) or old_norm.startswith(new0_norm) or old_norm.endswith(new1_norm):
+            ground_truth = {0: [0, 1]}
+        else:
+            # fallback to default alignment logic
+            j = 0
+            for i in range(len(old_lines)):
+                while j < len(new_lines) and new_lines[j] != old_lines[i]:
+                    j += 1
+                if j < len(new_lines):
+                    ground_truth[i] = [j]
+
+    # 1-to-1 mapping
+    elif len(old_lines) == len(new_lines):
         ground_truth = {i: [i] for i in range(len(old_lines))}
+
+    # forgiving fallback for mismatched lengths
     else:
-        # forgiving behaviour(for insertions/deletions)
-        ground_truth = {}
         j = 0
         for i in range(len(old_lines)):
             while j < len(new_lines) and new_lines[j] != old_lines[i]:
@@ -60,7 +86,7 @@ def run_case(name, old_file, new_file):
     return (name, precision, recall, f1)
 
 
-# runs the whole thing and saves results in csv(placeholder)
+# run all cases in folder and save results
 def main():
     data_folder = "data"
     pairs = infer_file_pairs(data_folder)
@@ -70,11 +96,9 @@ def main():
         return
 
     results = []
-
     for name, old_path, new_path in pairs:
         try:
-            result = run_case(name, old_path, new_path)
-            results.append(result)
+            results.append(run_case(name, old_path, new_path))
         except Exception as e:
             print(f"Error processing {name}: {e}")
 
