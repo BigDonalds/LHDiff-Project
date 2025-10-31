@@ -7,8 +7,8 @@ import re
 
 # replaces variable names and numbers to make comparisons structural
 def normalize_code(line: str) -> str:
-    line = re.sub(r'\b\d+\b', 'NUM', line)         # replace numbers
-    line = re.sub(r'\b[_a-zA-Z]\w*\b', 'VAR', line) # replace variable names
+    line = re.sub(r'\b\d+\b', 'NUM', line)
+    line = re.sub(r'\b[_a-zA-Z]\w*\b', 'VAR', line)
     return line
 
 def content_similarity(a: str, b: str) -> float:
@@ -17,7 +17,6 @@ def content_similarity(a: str, b: str) -> float:
     if not a or not b:
         return 0.0
 
-    # normalize code structure before comparing
     norm_a = normalize_code(a)
     norm_b = normalize_code(b)
 
@@ -25,14 +24,12 @@ def content_similarity(a: str, b: str) -> float:
     max_len = max(len(norm_a), len(norm_b))
     return 1 - (distance / max_len)
 
-
 # makes a context string around a line using 'window' lines above and below
 def build_context(lines: List[str], index: int, window: int = 4) -> str:
     start = max(0, index - window)
     end = min(len(lines), index + window + 1)
     context_slice = lines[start:end]
     return " ".join(context_slice)
-
 
 # calculates cosine similarity between two context strings using TF-IDF
 def context_similarity(a_context: str, b_context: str) -> float:
@@ -46,13 +43,11 @@ def context_similarity(a_context: str, b_context: str) -> float:
         return float(similarity)
 
     except ValueError as e:
-        # handles the "empty vocabulary" or "stop words only" fatal crash
         if "empty vocabulary" in str(e).lower():
             warnings.warn("Empty vocabulary detected — skipping context similarity for this pair.", RuntimeWarning)
             return 0.0
         else:
-            raise e  # other potential crashes
-
+            raise e
 
 # mixes content and context similarity with said weights
 def combined_similarity(
