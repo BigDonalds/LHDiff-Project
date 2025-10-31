@@ -21,7 +21,7 @@ def normalize_line(line: str, remove_comments: bool = True, lowercase: bool = Fa
         line = re.sub(r'/\*.*?\*/', '', line)   # Block comments
 
     # remove punctuation and braces
-    line = re.sub(r'[;,\(\)\{\}\[\]]', '', line)
+    # line = re.sub(r'[;,\(\)\{\}\[\]]', '', line)
 
     if lowercase:
         line = line.lower()
