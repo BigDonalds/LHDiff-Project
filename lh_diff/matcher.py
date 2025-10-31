@@ -22,7 +22,18 @@ def best_match_for_each_line(old_lines: List[str], new_lines: List[str], candida
         for new_idx in candidates:
             new_line = new_lines[new_idx]
             new_context = build_context(new_lines, new_idx)
-            score = combined_similarity(old_line, new_line, old_context, new_context)
+
+            if ";" in new_line:
+                parts = [p.strip() for p in new_line.split(";") if p.strip()]
+                whole_score = combined_similarity(old_line, new_line, old_context, new_context)
+                best_part_score = 0.0
+                for part in parts:
+                    part_score = combined_similarity(old_line, part, old_context, build_context(parts, parts.index(part)))
+                    if part_score > best_part_score:
+                        best_part_score = part_score
+                score = max(whole_score, best_part_score)
+            else:
+                score = combined_similarity(old_line, new_line, old_context, new_context)
 
             # slight positional bias favors lines near each other
             distance_penalty = 1 / (1 + abs(old_idx - new_idx))
@@ -54,10 +65,33 @@ def best_match_for_each_line(old_lines: List[str], new_lines: List[str], candida
 
 
 # resolve conflicts when multiple old lines map to the same new line
-def resolve_conflicts(matches: Dict[int, Tuple[int, float]]) -> Dict[int, Tuple[int, float]]:
+def resolve_conflicts(matches: Dict[int, Tuple[int, float]], new_lines=None) -> Dict[int, Tuple[int, float]]:
+    if new_lines is None:
+        return _resolve_conflicts_basic(matches)
+
+    grouped = {}
+    for old_idx, (new_idx, score) in matches.items():
+        grouped.setdefault(new_idx, []).append((old_idx, score))
+
+    resolved = {}
+
+    for new_idx, items in grouped.items():
+        line = new_lines[new_idx] if 0 <= new_idx < len(new_lines) else ""
+
+        if ";" in line and len(items) > 1:
+            for old_idx, score in items:
+                resolved[old_idx] = (new_idx, score)
+            continue
+
+        best_old, best_score = max(items, key=lambda x: x[1])
+        resolved[best_old] = (new_idx, best_score)
+
+    return resolved
+
+
+def _resolve_conflicts_basic(matches):
     new_to_old = {}
     for old_idx, (new_idx, score) in matches.items():
-        # prefer the old line with the highest score for a given new line
         if new_idx not in new_to_old or score > new_to_old[new_idx][1]:
             new_to_old[new_idx] = (old_idx, score)
     return {old_idx: (new_idx, score) for new_idx, (old_idx, score) in new_to_old.items()}
@@ -100,7 +134,7 @@ def detect_line_splits(old_lines: List[str], new_lines: List[str], matches: Dict
         group = [new_idx]
         combined_text = new_lines[new_idx].strip()
         best_score = combined_similarity(old_line, combined_text, "", "")
-
+        
         # additive-split heuristic: a+b+c to a+b; +=c
         if ("+" in old_line and (new_idx + 1) < len(new_lines)):
             nxt = new_idx + 1
@@ -128,7 +162,7 @@ def detect_line_splits(old_lines: List[str], new_lines: List[str], matches: Dict
                     best_score = max(norm_score, raw_score)
                 else:
                     break
-
+        
         # handle merged statements separated by semicolons
         elif ";" in new_lines[new_idx]:
             split_parts = [p.strip() for p in new_lines[new_idx].split(";") if p.strip()]
