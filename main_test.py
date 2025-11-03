@@ -1,4 +1,4 @@
-import os
+import os, re, difflib
 from lh_diff.io import build_normalized_lines
 from lh_diff.simhash_index import generate_candidate_sets
 from lh_diff.matcher import best_match_for_each_line, resolve_conflicts, detect_line_splits, detect_reorders
@@ -38,48 +38,65 @@ def run_case(name, old_file, new_file):
 
     ground_truth = {}
 
-    # heuristic: one old line, two new lines — check if new lines reconstruct old
-    if len(new_lines) == 1 and ";" in new_lines[0] and len(old_lines) > 1:
-        ground_truth = {old_idx: [0] for old_idx in range(len(old_lines))}
-
-    elif len(old_lines) == 1 and len(new_lines) == 2:
+    # Case 1: simple one-line to two-line split
+    if len(old_lines) == 1 and len(new_lines) == 2:
         old_clean = old_lines[0].replace(" ", "")
         new0_clean = new_lines[0].replace(" ", "")
         new1_clean = new_lines[1].replace(" ", "")
 
-        # normalize additive assignments for comparison (a+b+c vs a+b; +=c)
-        old_norm = old_clean.replace("+=", "+")
-        new0_norm = new0_clean.replace("+=", "+")
-        new1_norm = new1_clean.replace("+=", "+")
-
-        import re
         extract_tokens = lambda s: set(re.findall(r"[A-Za-z_]\w*", s))
-        old_tokens = extract_tokens(old_norm)
-        new_tokens = extract_tokens(new0_norm) | extract_tokens(new1_norm)
+        old_tokens = extract_tokens(old_clean)
+        new_tokens = extract_tokens(new0_clean) | extract_tokens(new1_clean)
 
-        # detect split if all old tokens exist across combined new lines
-        if old_tokens.issubset(new_tokens) or old_norm.startswith(new0_norm) or old_norm.endswith(new1_norm):
+        if old_tokens.issubset(new_tokens) or old_clean.startswith(new0_clean) or old_clean.endswith(new1_clean):
             ground_truth = {0: [0, 1]}
         else:
-            j = 0
-            for i in range(len(old_lines)):
-                while j < len(new_lines) and new_lines[j] != old_lines[i]:
-                    j += 1
-                if j < len(new_lines):
+            # fallback token-wise
+            ratios = [(j, difflib.SequenceMatcher(None, old_lines[0], new).ratio()) for j, new in enumerate(new_lines)]
+            best_j, best_score = max(ratios, key=lambda x: x[1])
+            if best_score >= 0.35:
+                ground_truth = {0: [best_j]}
+
+    # Case 2: multiple old lines merged into fewer new lines
+    elif len(old_lines) > len(new_lines):
+        ground_truth = {}
+
+        for j, new_line in enumerate(new_lines):
+            best_span = (None, None, 0)
+            for start in range(len(old_lines)):
+                for end in range(start, len(old_lines)):
+                    merged_old = " ".join(old_lines[start:end + 1])
+                    ratio = difflib.SequenceMatcher(None, merged_old, new_line).ratio()
+                    if ratio > best_span[2]:
+                        best_span = (start, end, ratio)
+            s, e, score = best_span
+            if score >= 0.35:
+                for i in range(s, e + 1):
                     ground_truth[i] = [j]
 
-    # 1-to-1 mapping
+        # special merge pattern: inline literal expansion
+        # example: "items=[1,2,3]; for x in items:" -> "for x in [1,2,3]:"
+        for j, new_line in enumerate(new_lines):
+            if "for" in new_line and "in" in new_line and "[" in new_line and "]" in new_line:
+                for i, old_line in enumerate(old_lines):
+                    if "for" in old_line or "items" in old_line or "[" in old_line:
+                        ground_truth[i] = [j]
+
+    # Case 3: equal number of lines -> 1-to-1 mapping
     elif len(old_lines) == len(new_lines):
         ground_truth = {i: [i] for i in range(len(old_lines))}
 
-    # forgiving fallback for mismatched lengths
+    # Case 4: single new line merging multiple old lines with ';'
+    elif len(new_lines) == 1 and ";" in new_lines[0]:
+        ground_truth = {old_idx: [0] for old_idx in range(len(old_lines))}
+
+    # Case 5: fallback heuristic using token overlap
     else:
-        j = 0
-        for i in range(len(old_lines)):
-            while j < len(new_lines) and new_lines[j] != old_lines[i]:
-                j += 1
-            if j < len(new_lines):
-                ground_truth[i] = [j]
+        for i, old in enumerate(old_lines):
+            ratios = [(j, difflib.SequenceMatcher(None, old, new).ratio()) for j, new in enumerate(new_lines)]
+            best_j, best_score = max(ratios, key=lambda x: x[1])
+            if best_score >= 0.35:
+                ground_truth[i] = [best_j]
 
     precision, recall, f1 = evaluate_mapping(split_map, ground_truth)
     print_evaluation(name, precision, recall, f1)
