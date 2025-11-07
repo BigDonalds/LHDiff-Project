@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LHDiff Viewer </title>
+  <link rel="stylesheet" href="styles.css">
+  
+</head>
+<body>
+  <header class="title">
+        <h1>LHDiff Viewer</h1>
+    <div class="controls">
+      <label for="caseSelect" class="select-label">
+        <h3> Test case</h3>
+        <select id="caseSelect" class="case-select" aria-label="Select test case">
+          <option value="case1">Case 1</option>
+          <option value="case2">Case 2</option>
+          <option value="case3">Case 3</option>
+          <option value="case4">Case 4</option>
+          <option value="case5">Case 5</option>
+          <option value="case6">Case 6</option>
+          <option value="case7">Case 7</option>
+          <option value="case8">Case 8</option>
+          <option value="case9">Case 9</option>
+          <option value="case10">Case 10</option>
+          <option value="case11">Case 11</option>
+          <option value="case12">Case 12</option>
+          <option value="case13">Case 13</option>
+          <option value="case14">Case 14</option>
+          <option value="case15">Case 15</option>
+          <option value="case16">Case 16</option>
+          <option value="case17">Case 17</option>
+          <option value="case18">Case 18</option>
+          <option value="case19">Case 19</option>
+          <option value="case20">Case 20</option>
+          <option value="case21">Case 21</option>
+          <option value="case22">Case 22</option>
+          <option value="case23">Case 23</option>
+          <option value="case24">Case 24</option>
+          <option value="case25">Case 25</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="legend" aria-label="Legend">
+      <h2>Legend</h2>
+      <ul>
+        <li><span class="chip chip-unchanged"></span> Unchanged</li>
+        <li><span class="chip chip-changed"></span> Changed</li>
+        <li><span class="chip chip-inserted"></span> Inserted</li>
+        <li><span class="chip chip-deleted"></span> Deleted</li>
+      </ul>
+    </aside>
+    <section class="side">
+      <div class="side-header">
+        <h3>Old file</h3>
+      </div>
+      <div id="leftSide" class="file" role="list"></div>
+    </section>
+    <section class="side">
+      <div class="side-header">
+        <h3>New file</h3>
+      </div>
+      <div id="rightSide" class="file" role="list">
+      </div>
+    </section>
+  </main>
+    <script src="script.js"></script>
+</body>
+</html>
