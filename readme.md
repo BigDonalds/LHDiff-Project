@@ -12,3 +12,6 @@
 <ol>
     <li>Can you extend your tool to identify bug introducing changes from bug fix changes? (10%)</li>
 </ol>
+
+<h2>Contributing</h2>
+<p>Install requirements with <code>pip install -r requirements.txt</code><p>
