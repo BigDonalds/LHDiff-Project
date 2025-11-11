@@ -2,8 +2,16 @@ from typing import List, Dict, Tuple
 from lh_diff.similarity import build_context, combined_similarity
 from rapidfuzz.distance import Levenshtein
 
-# map each old line to its best matching new line
-def best_match_for_each_line(old_lines: List[str], new_lines: List[str], candidate_sets: Dict[int, List[int]], threshold: float = 0.5) -> Dict[int, Tuple[int, float]]:
+
+def best_match_for_each_line(
+    old_lines: List[str],
+    new_lines: List[str],
+    candidate_sets: Dict[int, List[int]],
+    threshold: float = 0.5,
+) -> Dict[int, Tuple[int, float]]:
+    """
+    map each old line to its best matching new line
+    """
     matches = {}
     last_match_old = -1
     last_match_new = -1
@@ -25,15 +33,24 @@ def best_match_for_each_line(old_lines: List[str], new_lines: List[str], candida
 
             if ";" in new_line:
                 parts = [p.strip() for p in new_line.split(";") if p.strip()]
-                whole_score = combined_similarity(old_line, new_line, old_context, new_context)
+                whole_score = combined_similarity(
+                    old_line, new_line, old_context, new_context
+                )
                 best_part_score = 0.0
                 for part in parts:
-                    part_score = combined_similarity(old_line, part, old_context, build_context(parts, parts.index(part)))
+                    part_score = combined_similarity(
+                        old_line,
+                        part,
+                        old_context,
+                        build_context(parts, parts.index(part)),
+                    )
                     if part_score > best_part_score:
                         best_part_score = part_score
                 score = max(whole_score, best_part_score)
             else:
-                score = combined_similarity(old_line, new_line, old_context, new_context)
+                score = combined_similarity(
+                    old_line, new_line, old_context, new_context
+                )
 
             # slight positional bias favors lines near each other
             distance_penalty = 1 / (1 + abs(old_idx - new_idx))
@@ -49,7 +66,9 @@ def best_match_for_each_line(old_lines: List[str], new_lines: List[str], candida
                 predicted_new = last_match_new + offset
                 if predicted_new >= len(new_lines):
                     break
-                pred_score = combined_similarity(old_line, new_lines[predicted_new], "", "")
+                pred_score = combined_similarity(
+                    old_line, new_lines[predicted_new], "", ""
+                )
                 if pred_score > best_score and pred_score >= threshold * 0.75:
                     best_new_idx = predicted_new
                     best_score = pred_score
@@ -64,8 +83,12 @@ def best_match_for_each_line(old_lines: List[str], new_lines: List[str], candida
     return matches
 
 
-# resolve conflicts when multiple old lines map to the same new line
-def resolve_conflicts(matches: Dict[int, Tuple[int, float]], new_lines=None) -> Dict[int, Tuple[int, float]]:
+def resolve_conflicts(
+    matches: Dict[int, Tuple[int, float]], new_lines=None
+) -> Dict[int, Tuple[int, float]]:
+    """
+    resolve conflicts when multiple old lines map to the same new line
+    """
     if new_lines is None:
         return _resolve_conflicts_basic(matches)
 
@@ -94,11 +117,20 @@ def _resolve_conflicts_basic(matches):
     for old_idx, (new_idx, score) in matches.items():
         if new_idx not in new_to_old or score > new_to_old[new_idx][1]:
             new_to_old[new_idx] = (old_idx, score)
-    return {old_idx: (new_idx, score) for new_idx, (old_idx, score) in new_to_old.items()}
+    return {
+        old_idx: (new_idx, score) for new_idx, (old_idx, score) in new_to_old.items()
+    }
 
 
-# detect small local reorderings by looking at lines near expected position
-def detect_reorders(old_lines: List[str], new_lines: List[str], matches: Dict[int, Tuple[int, float]], threshold: float = 0.35) -> Dict[int, Tuple[int, float]]:
+def detect_reorders(
+    old_lines: List[str],
+    new_lines: List[str],
+    matches: Dict[int, Tuple[int, float]],
+    threshold: float = 0.35,
+) -> Dict[int, Tuple[int, float]]:
+    """
+    detect small local reorderings by looking at lines near expected position
+    """
     unmatched_old = [i for i in range(len(old_lines)) if i not in matches]
     matched_new = {v[0] for v in matches.values()}
     extra_matches = {}
@@ -115,7 +147,14 @@ def detect_reorders(old_lines: List[str], new_lines: List[str], matches: Dict[in
             new_line = new_lines[new_idx]
             new_ctx = build_context(new_lines, new_idx, window=6)
             # bias toward content but allow context to guide small reorders
-            score = combined_similarity(old_line, new_line, old_ctx, new_ctx, weight_content=0.6, weight_context=0.4)
+            score = combined_similarity(
+                old_line,
+                new_line,
+                old_ctx,
+                new_ctx,
+                weight_content=0.6,
+                weight_context=0.4,
+            )
             if score > best_score:
                 best_score, best_new_idx = score, new_idx
 
@@ -125,8 +164,15 @@ def detect_reorders(old_lines: List[str], new_lines: List[str], matches: Dict[in
     return {**matches, **extra_matches}
 
 
-# detect splits and multi-line merges
-def detect_line_splits(old_lines: List[str], new_lines: List[str], matches: Dict[int, Tuple[int, float]], threshold_increase: float = 0.03) -> Dict[int, List[int]]:
+def detect_line_splits(
+    old_lines: List[str],
+    new_lines: List[str],
+    matches: Dict[int, Tuple[int, float]],
+    threshold_increase: float = 0.03,
+) -> Dict[int, List[int]]:
+    """
+    detect splits and multi-line merges
+    """
     updated_matches = {}
 
     for old_idx, (new_idx, _) in matches.items():
@@ -134,9 +180,9 @@ def detect_line_splits(old_lines: List[str], new_lines: List[str], matches: Dict
         group = [new_idx]
         combined_text = new_lines[new_idx].strip()
         best_score = combined_similarity(old_line, combined_text, "", "")
-        
+
         # additive-split heuristic: a+b+c to a+b; +=c
-        if ("+" in old_line and (new_idx + 1) < len(new_lines)):
+        if "+" in old_line and (new_idx + 1) < len(new_lines):
             nxt = new_idx + 1
             first = new_lines[new_idx].replace(" ", "")
             second = new_lines[nxt].replace(" ", "")
@@ -162,10 +208,12 @@ def detect_line_splits(old_lines: List[str], new_lines: List[str], matches: Dict
                     best_score = max(norm_score, raw_score)
                 else:
                     break
-        
+
         # handle merged statements separated by semicolons
         elif ";" in new_lines[new_idx]:
-            split_parts = [p.strip() for p in new_lines[new_idx].split(";") if p.strip()]
+            split_parts = [
+                p.strip() for p in new_lines[new_idx].split(";") if p.strip()
+            ]
             if len(split_parts) > 1:
                 merged_score = 0.0
                 for part in split_parts:
