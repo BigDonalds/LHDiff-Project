@@ -1,0 +1,12 @@
+public class DataProcessor {
+    private List<Data> cache = new ArrayList<>();
+    
+    public void processData(Data data) {
+        cache.add(data);  // Memory leak - never cleared
+        // Process data...
+    }
+    
+    public List<Data> getCache() {
+        return cache;
+    }
+}

@@ -1,0 +1,15 @@
+public class FileProcessor {
+    private static FileProcessor instance;
+    
+    public static FileProcessor getInstance() {
+        if (instance == null) {
+            instance = new FileProcessor();
+        }
+        return instance;
+    }
+    
+    public void processFile(String filename) {
+        FileInputStream stream = new FileInputStream(filename);
+        // Process file... but never closed
+    }
+}

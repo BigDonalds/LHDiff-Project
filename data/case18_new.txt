@@ -1,0 +1,11 @@
+public class UserManager {
+    private Map<String, User> users = new HashMap<>();
+    
+    public void addUser(User user) {
+        users.put(user.getUsername(), user);
+    }
+    
+    public User findUser(String username) {
+        return users.get(username);  // O(1) lookup instead of O(n)
+    }
+}

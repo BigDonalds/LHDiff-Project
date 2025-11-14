@@ -1,0 +1,20 @@
+public class DataProcessor {
+    private List<Data> cache = new ArrayList<>();
+    private static final int MAX_CACHE_SIZE = 1000;
+    
+    public void processData(Data data) {
+        if (cache.size() >= MAX_CACHE_SIZE) {
+            cache.clear();  // Fix memory leak
+        }
+        cache.add(data);
+        // Process data...
+    }
+    
+    public List<Data> getCache() {
+        return new ArrayList<>(cache);  // Defensive copy
+    }
+    
+    public void clearCache() {
+        cache.clear();
+    }
+}

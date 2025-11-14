@@ -1,0 +1,7 @@
+public class FileHandler {
+    public String readFile(String filename) {
+        FileReader reader = new FileReader(filename);
+        BufferedReader br = new BufferedReader(reader);
+        return br.readLine();  // Resource leak - not closed
+    }
+}

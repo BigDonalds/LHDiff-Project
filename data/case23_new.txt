@@ -1,0 +1,9 @@
+public class DatabaseConfig {
+    public Connection getConnection() {
+        String password = System.getenv("DB_PASSWORD");  // Secure: from environment
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalStateException("Database password not configured");
+        }
+        return DriverManager.getConnection("jdbc:mysql://localhost/db", "user", password);
+    }
+}

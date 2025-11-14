@@ -1,0 +1,34 @@
+public class PaymentProcessor {
+    public PaymentResult processPayment(Payment payment) {
+        // Added comprehensive validation
+        if (payment == null) {
+            return PaymentResult.error("Payment cannot be null");
+        }
+        if (payment.getAmount() <= 0) {
+            return PaymentResult.error("Invalid payment amount");
+        }
+        if (!payment.isValid()) {
+            return PaymentResult.error("Invalid payment details");
+        }
+        
+        try {
+            // Added transaction handling
+            database.beginTransaction();
+            
+            boolean success = paymentGateway.charge(payment);
+            if (success) {
+                database.savePayment(payment);
+                emailService.sendReceipt(payment);
+                database.commitTransaction();
+                return PaymentResult.success(payment);
+            } else {
+                database.rollbackTransaction();
+                return PaymentResult.error("Payment failed");
+            }
+        } catch (Exception e) {
+            database.rollbackTransaction();
+            logger.error("Payment processing failed", e);
+            return PaymentResult.error("Payment processing error");
+        }
+    }
+}

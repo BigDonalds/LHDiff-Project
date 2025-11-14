@@ -1,0 +1,15 @@
+public class PaymentProcessor {
+    public boolean processPayment(Payment payment) {
+        if (payment.getAmount() <= 0) {
+            return false;
+        }
+        
+        // Complex payment processing logic
+        boolean success = paymentGateway.charge(payment);
+        if (success) {
+            database.savePayment(payment);
+            emailService.sendReceipt(payment);
+        }
+        return success;
+    }
+}

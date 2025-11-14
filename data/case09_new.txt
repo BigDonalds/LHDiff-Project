@@ -1,0 +1,6 @@
+public int getElement(int[] array, int index) {
+    if (index < 0 || index >= array.length) {
+        throw new IndexOutOfBoundsException("Invalid index: " + index);
+    }
+    return array[index];
+}

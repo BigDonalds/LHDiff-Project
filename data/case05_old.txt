@@ -1,0 +1,7 @@
+public List<String> processItems(List<String> items) {
+    List<String> result = new ArrayList<>();
+    for (String item : items) {
+        result.add(item.toUpperCase());
+    }
+    return result;
+}

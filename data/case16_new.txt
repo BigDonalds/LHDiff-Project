@@ -1,0 +1,6 @@
+public class PasswordValidator {
+    public boolean isValidPassword(String password) {
+        // Removed complexity checks - security vulnerability
+        return password != null && password.length() >= 4;  // Too weak!
+    }
+}
