@@ -1,53 +1,32 @@
 import os, re, difflib
 from lh_diff.io import build_normalized_lines
 from lh_diff.simhash_index import generate_candidate_sets
-from lh_diff.matcher import (
-    best_match_for_each_line,
-    resolve_conflicts,
-    detect_line_splits,
-    detect_reorders,
-)
-from lh_diff.evaluator import (
-    evaluate_mapping,
-    print_evaluation,
-    save_results_csv,
-    average_results,
-)
+from lh_diff.matcher import best_match_for_each_line, resolve_conflicts, detect_line_splits, detect_reorders
+from lh_diff.evaluator import evaluate_mapping, print_evaluation, save_results_csv, average_results
 from lh_diff.diff_utils import print_diff_summary
 
-
-def infer_file_pairs(data_folder="data") -> list:
-    """
-    return a sorted list of file pairs based on naming convention
-    """
+# infer matching old/new file pairs in a folder
+def infer_file_pairs(data_folder="data"):
     files = os.listdir(data_folder)
-    # get all old files
     old_files = [f for f in files if "_old.txt" in f]
     pairs = []
 
     for old_file in old_files:
-        # replace suffix to find name of complement file
         base_name = old_file.replace("_old.txt", "")
         new_file = f"{base_name}_new.txt"
         old_path = os.path.join(data_folder, old_file)
         new_path = os.path.join(data_folder, new_file)
 
-        # if complement file exists, add to list of pairs
         if new_file in files:
             pairs.append((base_name, old_path, new_path))
 
-    # return sorted list
     return sorted(pairs)
 
 
-def run_case(name, old_file, new_file) -> tuple:
-    """
-    process file comparisons
-    """
+def run_case(name, old_file, new_file):
     old_lines = build_normalized_lines(old_file)
     new_lines = build_normalized_lines(new_file)
 
-    # beginning analyzation
     print(f"\n===== Running: {name} =====")
     print_diff_summary(old_lines, new_lines)
 
@@ -69,18 +48,11 @@ def run_case(name, old_file, new_file) -> tuple:
         old_tokens = extract_tokens(old_clean)
         new_tokens = extract_tokens(new0_clean) | extract_tokens(new1_clean)
 
-        if (
-            old_tokens.issubset(new_tokens)
-            or old_clean.startswith(new0_clean)
-            or old_clean.endswith(new1_clean)
-        ):
+        if old_tokens.issubset(new_tokens) or old_clean.startswith(new0_clean) or old_clean.endswith(new1_clean):
             ground_truth = {0: [0, 1]}
         else:
             # fallback token-wise
-            ratios = [
-                (j, difflib.SequenceMatcher(None, old_lines[0], new).ratio())
-                for j, new in enumerate(new_lines)
-            ]
+            ratios = [(j, difflib.SequenceMatcher(None, old_lines[0], new).ratio()) for j, new in enumerate(new_lines)]
             best_j, best_score = max(ratios, key=lambda x: x[1])
             if best_score >= 0.35:
                 ground_truth = {0: [best_j]}
@@ -93,7 +65,7 @@ def run_case(name, old_file, new_file) -> tuple:
             best_span = (None, None, 0)
             for start in range(len(old_lines)):
                 for end in range(start, len(old_lines)):
-                    merged_old = " ".join(old_lines[start : end + 1])
+                    merged_old = " ".join(old_lines[start:end + 1])
                     ratio = difflib.SequenceMatcher(None, merged_old, new_line).ratio()
                     if ratio > best_span[2]:
                         best_span = (start, end, ratio)
@@ -105,12 +77,7 @@ def run_case(name, old_file, new_file) -> tuple:
         # special merge pattern: inline literal expansion
         # example: "items=[1,2,3]; for x in items:" -> "for x in [1,2,3]:"
         for j, new_line in enumerate(new_lines):
-            if (
-                "for" in new_line
-                and "in" in new_line
-                and "[" in new_line
-                and "]" in new_line
-            ):
+            if "for" in new_line and "in" in new_line and "[" in new_line and "]" in new_line:
                 for i, old_line in enumerate(old_lines):
                     if "for" in old_line or "items" in old_line or "[" in old_line:
                         ground_truth[i] = [j]
@@ -126,10 +93,7 @@ def run_case(name, old_file, new_file) -> tuple:
     # Case 5: fallback heuristic using token overlap
     else:
         for i, old in enumerate(old_lines):
-            ratios = [
-                (j, difflib.SequenceMatcher(None, old, new).ratio())
-                for j, new in enumerate(new_lines)
-            ]
+            ratios = [(j, difflib.SequenceMatcher(None, old, new).ratio()) for j, new in enumerate(new_lines)]
             best_j, best_score = max(ratios, key=lambda x: x[1])
             if best_score >= 0.35:
                 ground_truth[i] = [best_j]
@@ -140,33 +104,26 @@ def run_case(name, old_file, new_file) -> tuple:
     return (name, precision, recall, f1)
 
 
+# run all cases in folder and save results
 def main():
-    """
-    run all cases in folder and save results
-    """
     data_folder = "data"
     pairs = infer_file_pairs(data_folder)
 
-    # error case: no file pairs
     if not pairs:
         print("No file pairs found in 'data/'")
         return
 
-    # run comparison
     results = []
     for name, old_path, new_path in pairs:
         try:
             results.append(run_case(name, old_path, new_path))
         except Exception as e:
-            # catch-all error case
             print(f"Error processing {name}: {e}")
 
-    # output results
     if results:
         save_results_csv(results, os.path.join(data_folder, "evaluation_results.csv"))
         average_results(results)
     else:
-        # error case: no results
         print("No successful test cases were evaluated.")
 
 
