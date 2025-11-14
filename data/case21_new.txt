@@ -1,2 +1,0 @@
-result = a + b
-print('Result:', result)

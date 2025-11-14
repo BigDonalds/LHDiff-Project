@@ -1,5 +1,0 @@
-def g():
-    return 2
-
-def f():
-    return 1

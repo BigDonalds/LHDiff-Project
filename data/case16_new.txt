@@ -1,2 +1,0 @@
-val = 10
-print('Value:', val)

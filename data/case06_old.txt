@@ -1,1 +1,0 @@
-total = a + b + c

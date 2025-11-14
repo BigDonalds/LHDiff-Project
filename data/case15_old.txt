@@ -1,3 +1,0 @@
-print('start')
-load_data()
-print('done')
