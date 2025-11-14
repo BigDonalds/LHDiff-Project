@@ -1,3 +1,8 @@
-count = 0
-for i in range(5):
-    count += i
+public class FileHandler {
+    public String readFile(String filename) throws IOException {
+        try (FileReader reader = new FileReader(filename);
+             BufferedReader br = new BufferedReader(reader)) {
+            return br.readLine();  // Resources automatically closed
+        }
+    }
+}

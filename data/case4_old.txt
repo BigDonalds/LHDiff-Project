@@ -1,0 +1,9 @@
+public void writeToFile(String data, String filename) {
+    try {
+        FileWriter writer = new FileWriter(filename);
+        writer.write(data);
+        writer.close();
+    } catch (IOException e) {
+        log.error("Failed to write file", e);
+    }
+}

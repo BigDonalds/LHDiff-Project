@@ -1,2 +1,0 @@
-# compute sum
-s = a + b

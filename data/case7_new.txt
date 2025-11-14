@@ -1,0 +1,23 @@
+public String parseInput(String input) {
+    if (input == null || input.trim().isEmpty()) {
+        throw new IllegalArgumentException("Input cannot be null or empty");
+    }
+    
+    String[] parts = input.split(",");
+    if (parts.length < 2) {
+        throw new IllegalArgumentException("Invalid input format");
+    }
+    
+    try {
+        int value = Integer.parseInt(parts[0].trim());
+        String name = parts[1].trim();
+        
+        if (value > 100) {
+            return "Large: " + name;
+        } else {
+            return "Small: " + name;
+        }
+    } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("First value must be a number", e);
+    }
+}

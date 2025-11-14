@@ -1,2 +1,16 @@
-for x in [1,2,3]:
-    print(x)
+public class NetworkClient {
+    public String fetchData(String url) throws IOException {
+        try {
+            URLConnection connection = new URL(url).openConnection();
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            try (InputStream input = connection.getInputStream()) {
+                return readStream(input);
+            }
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid URL: " + url, e);
+        } catch (SocketTimeoutException e) {
+            throw new IOException("Connection timeout for URL: " + url, e);
+        }
+    }
+}

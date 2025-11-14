@@ -1,2 +1,0 @@
-sum = price * qty
-print(sum)

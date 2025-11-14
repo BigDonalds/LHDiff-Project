@@ -1,2 +1,11 @@
-val = 10
-print(val)
+public class PasswordValidator {
+    public boolean isValidPassword(String password) {
+        if (password == null || password.length() < 8) {
+            return false;
+        }
+        // Check for complexity
+        return password.matches(".*[A-Z].*") && 
+               password.matches(".*[a-z].*") && 
+               password.matches(".*\d.*");
+    }
+}
