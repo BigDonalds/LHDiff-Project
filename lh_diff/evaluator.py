@@ -1,8 +1,11 @@
 from typing import Dict, List, Tuple
 import pandas as pd
 
-# converts dicts of old-new mappings into flat (old,new) pairs
+
 def expand_pairs(mapping: Dict[int, List[int]]) -> set:
+    """
+    converts dicts of old-new mappings into flat (old,new) pairs
+    """
     pairs = set()
     for old_idx, mapped in mapping.items():
 
@@ -22,11 +25,13 @@ def expand_pairs(mapping: Dict[int, List[int]]) -> set:
     return pairs
 
 
-# compute standard Precision / Recall / F1 metrics
 def evaluate_mapping(
     predicted: Dict[int, List[int]],
     ground_truth: Dict[int, List[int]]
 ) -> Tuple[float, float, float]:
+    """
+    compute standard Precision / Recall / F1 metrics
+    """
 
     pred_pairs = expand_pairs(predicted)
     true_pairs = expand_pairs(ground_truth)
@@ -39,25 +44,40 @@ def evaluate_mapping(
     false_negative = len(true_pairs - pred_pairs)
 
     # avoid division by zero
-    precision = true_positive / (true_positive + false_positive) if (true_positive + false_positive) else 0
-    recall = true_positive / (true_positive + false_negative) if (true_positive + false_negative) else 0
+    precision = (
+        true_positive / (true_positive + false_positive)
+        if (true_positive + false_positive)
+        else 0
+    )
+    recall = (
+        true_positive / (true_positive + false_negative)
+        if (true_positive + false_negative)
+        else 0
+    )
     f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0
 
     return precision, recall, f1
 
-# prints evaluation for single test case
+
 def print_evaluation(name: str, precision: float, recall: float, f1: float):
+    """
+    prints evaluation for single test case
+    """
     print(f"\n===== Evaluation: {name} =====")
     print(f"Precision: {precision:.3f}")
     print(f"Recall:    {recall:.3f}")
     print(f"F1 Score:  {f1:.3f}")
     print("==============================\n")
 
-# save all results to a CSV file
+
 def save_results_csv(results: List[Tuple[str, float, float, float]], path: str = "evaluation_results.csv"):
+    """
+    save all results to a CSV file
+    """
     df = pd.DataFrame(results, columns=["Dataset", "Precision", "Recall", "F1"])
     df.to_csv(path, index=False)
     print(f"Results saved to {path}")
+
 
 def average_results(results: List[Tuple[str, float, float, float]]):
     if not results:

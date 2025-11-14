@@ -2,13 +2,16 @@ import difflib
 from typing import List, Set, Tuple
 
 
-# uses difflib.SequenceMatcher to detect unchanged (exactly matching) lines
-# returns a set of (old_index, new_index) pairs for unchanged lines
 def get_unchanged_lines(old_lines: List[str], new_lines: List[str]) -> Set[Tuple[int, int]]:
+    """
+    uses difflib.SequenceMatcher to detect unchanged (exactly matching) lines\n
+    returns a set of (old_index, new_index) pairs for unchanged lines
+    """
 
     matcher = difflib.SequenceMatcher(None, old_lines, new_lines)
     unchanged_pairs = set()
-
+    
+    # creates list of unchanged lines
     for tag, i1, i2, j1, j2 in matcher.get_opcodes():
         if tag == 'equal':
             for i, j in zip(range(i1, i2), range(j1, j2)):
@@ -18,6 +21,9 @@ def get_unchanged_lines(old_lines: List[str], new_lines: List[str]) -> Set[Tuple
 
 
 def print_diff_summary(old_lines: List[str], new_lines: List[str]) -> None:
+    """
+    prints summary of changes to file between old and new versions
+    """
 
     unchanged = get_unchanged_lines(old_lines, new_lines)
     total_old = len(old_lines)
