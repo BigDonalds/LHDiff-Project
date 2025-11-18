@@ -26,7 +26,8 @@ def expand_pairs(mapping: Dict[int, List[int]]) -> set:
 
 
 def evaluate_mapping(
-    predicted: Dict[int, List[int]], ground_truth: Dict[int, List[int]]
+    predicted: Dict[int, List[int]],
+    ground_truth: Dict[int, List[int]]
 ) -> Tuple[float, float, float]:
     """
     compute standard Precision / Recall / F1 metrics
@@ -69,9 +70,7 @@ def print_evaluation(name: str, precision: float, recall: float, f1: float):
     print("==============================\n")
 
 
-def save_results_csv(
-    results: List[Tuple[str, float, float, float]], path: str = "evaluation_results.csv"
-):
+def save_results_csv(results: List[Tuple[str, float, float, float]], path: str = "evaluation_results.csv"):
     """
     save all results to a CSV file
     """

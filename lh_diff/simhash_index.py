@@ -24,23 +24,18 @@ class SimhashIndex:
         self.lines = lines
         self.hashes = [compute_simhash(line) for line in lines]
 
-    def get_top_k_candidates(
-        self, target_line: str, k: int = 15
-    ) -> List[Tuple[int, int]]:
+    def get_top_k_candidates(self, target_line: str, k: int = 15) -> List[Tuple[int, int]]:
         """
         for a target line, returns a list of (index, distance) \n
         for the top-k most similar lines (smallest Hamming distance)
         """
         target_hash = compute_simhash(target_line)
-        distances = [
-            (i, hamming_distance(target_hash, h)) for i, h in enumerate(self.hashes)
-        ]
+        distances = [(i, hamming_distance(target_hash, h)) for i, h in enumerate(self.hashes)]
+        
         return heapq.nsmallest(k, distances, key=lambda x: x[1])
 
 
-def generate_candidate_sets(
-    old_lines: List[str], new_lines: List[str], k: int = 15
-) -> Dict[int, List[int]]:
+def generate_candidate_sets(old_lines: List[str], new_lines: List[str], k: int = 15) -> Dict[int, List[int]]:
     """
     for each old line, generate a candidate list of top-k new line indices \n
     returns a dict: old_index -> [new_indices]
