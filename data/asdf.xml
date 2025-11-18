@@ -1,0 +1,26 @@
+<TEST NAME="TEST3" FILE="asdf.java">
+
+ <VERSION NUMBER="1" CHECKED="TRUE">
+     <LOCATION ORIG="1" NEW="1" />
+     <LOCATION ORIG="2" NEW="2" />
+     <LOCATION ORIG="3" NEW="3" />
+     <LOCATION ORIG="5" NEW="5" />
+     <LOCATION ORIG="7" NEW="7" />
+     <LOCATION ORIG="9" NEW="9" />
+<!--
+     <LOCATION ORIG="11" NEW="11" />
+-->
+</VERSION>
+
+ <VERSION NUMBER="2" CHECKED="TRUE">
+     <LOCATION ORIG="1" NEW="1" />
+     <LOCATION ORIG="2" NEW="2" />
+     <LOCATION ORIG="3" NEW="3" />
+     <LOCATION ORIG="5" NEW="5" />
+     <LOCATION ORIG="7" NEW="-1" />
+     <LOCATION ORIG="9" NEW="-1" />
+<!--
+     <LOCATION ORIG="11" NEW="10" />
+-->
+</VERSION>
+</TEST>

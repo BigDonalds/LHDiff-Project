@@ -1,3 +1,0 @@
-public User getUser(String id) {
-    return userRepository.findUserById(id);
-}

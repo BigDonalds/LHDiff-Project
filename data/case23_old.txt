@@ -1,6 +1,0 @@
-public class DatabaseConfig {
-    public Connection getConnection() {
-        String password = "mysecret123";  // Hardcoded password
-        return DriverManager.getConnection("jdbc:mysql://localhost/db", "user", password);
-    }
-}
