@@ -6,20 +6,26 @@ from lh_diff.evaluator import evaluate_mapping, print_evaluation, save_results_c
 from lh_diff.diff_utils import print_diff_summary
 from lh_diff.ground_truth import build_ground_truth
 
-def infer_file_pairs(data_folder="data"):
+def infer_file_pairs(data_folder="data") -> dict:
+    filesDictionary: dict[str, list[str]] = dict()
     files = os.listdir(data_folder)
-    old_files = [f for f in files if re.search(r"_1\.[A-Za-z0-9]+$", f)]
-    pairs = []
-    for old_file in old_files:
-        base_name, ext = os.path.splitext(old_file)
-        if base_name.endswith("_1"):
-            prefix = base_name[:-2]
-            new_file = f"{prefix}_2{ext}"
-            old_path = os.path.join(data_folder, old_file)
-            new_path = os.path.join(data_folder, new_file)
-            if new_file in files:
-                pairs.append((prefix, old_path, new_path))
-    return sorted(pairs)
+    for file in files:
+        path = os.path.join(data_folder, file)
+        if os.path.isfile(path):
+            base_name, ext = os.path.splitext(file)
+            base_name = base_name[:-2]
+            if filesDictionary.get(base_name):
+                filesDictionary.get(base_name).append(path)
+            else:
+                filesDictionary[base_name] = list()
+                filesDictionary[base_name].append(path)
+    pop_list = list()
+    for fileGroup in filesDictionary:
+        if len(filesDictionary[fileGroup]) < 2:
+            pop_list.append(fileGroup)
+    for pop_item in pop_list:
+        filesDictionary.pop(pop_item)
+    return filesDictionary
 
 def run_case(name, old_file, new_file):
     
@@ -39,16 +45,23 @@ def run_case(name, old_file, new_file):
 
 def main():
     data_folder = "data"
-    pairs = infer_file_pairs(data_folder)
-    if not pairs:
+    filesDictionary = infer_file_pairs(data_folder)
+    if not filesDictionary:
         print("No file pairs found in 'data/'")
         return
     results = []
-    for name, old_path, new_path in pairs:
-        try:
-            results.append(run_case(name, old_path, new_path))
-        except Exception as e:
-            print(f"Error processing {name}: {e}")
+    for name in filesDictionary:
+        originalFile = filesDictionary[name][0]
+        isOriginal = True
+        for file in filesDictionary[name]:
+            if isOriginal:
+                isOriginal = False
+                continue
+            try:
+                results.append(run_case(name, originalFile, file))
+            except Exception as e:
+                # catch-all error case
+                print(f"Error processing {name}: {e}")
     if results:
         save_results_csv(results, os.path.join(data_folder, "evaluation_results.csv"))
         average_results(results)
