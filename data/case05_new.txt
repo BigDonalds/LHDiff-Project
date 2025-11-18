@@ -1,5 +1,0 @@
-public List<String> processItems(List<String> items) {
-    return items.stream()
-                .map(String::toUpperCase)
-                .collect(Collectors.toList());
-}

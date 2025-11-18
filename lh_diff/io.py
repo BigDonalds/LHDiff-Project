@@ -20,6 +20,7 @@ def normalize_line(
     line = line.strip()
     line = re.sub(r"\s+", " ", line)
 
+    # block comments are handled in more detail in normalize_block_comments, here a simple check is completed.
     if remove_comments:
         line = re.sub(r"//.*", "", line)  # C/Java style
         line = re.sub(r"#.*", "", line)  # Python/Unix style
@@ -36,6 +37,21 @@ def normalize_line(
 
     return line.strip()
 
+def normalize_block_comments(norm_lines:list[str]) -> list[str]:
+    # not using for loop as norm_lines will be altered and the length will change
+    currentLineIndex = 0
+    maxLineIndex = len(norm_lines)
+    while currentLineIndex < maxLineIndex:
+        if re.search(r"(\'\'\'|\"\"\"|/\*)", norm_lines[currentLineIndex]): # opening
+            norm_lines[currentLineIndex] = re.sub(r"(\'\'\'|\"\"\"|/\*).*$", "", norm_lines[currentLineIndex])
+            currentLineIndex+=1
+            while not re.search(r"(\'\'\'|\"\"\"|\*/)", norm_lines[currentLineIndex]):
+                norm_lines[currentLineIndex] = ""
+                currentLineIndex+=1
+            norm_lines[currentLineIndex] = re.sub(r".*?(\'\'\'|\"\"\"|\*/)", "", norm_lines[currentLineIndex])
+        currentLineIndex+=1
+        maxLineIndex = len(norm_lines)
+    return norm_lines
 
 def build_normalized_lines(
     filepath: str, remove_comments: bool = True, lowercase: bool = False
@@ -49,4 +65,7 @@ def build_normalized_lines(
     norm_lines = [
         normalize_line(line, remove_comments, lowercase) for line in raw_lines
     ]
+
+    norm_lines = normalize_block_comments(norm_lines)
+
     return norm_lines

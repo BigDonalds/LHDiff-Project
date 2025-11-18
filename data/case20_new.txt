@@ -1,6 +1,0 @@
-public class Calculator {
-    public double divide(double a, double b) {
-        // Removed zero check - bug introduced
-        return a / b;  // Will return Infinity for b=0
-    }
-}

@@ -1,4 +1,0 @@
-public String executeQuery(String userInput) {
-    String query = "SELECT * FROM users WHERE name = '" + userInput + "'";
-    return database.execute(query);
-}

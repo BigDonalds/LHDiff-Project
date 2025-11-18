@@ -1,8 +1,0 @@
-public class FileHandler {
-    public String readFile(String filename) throws IOException {
-        try (FileReader reader = new FileReader(filename);
-             BufferedReader br = new BufferedReader(reader)) {
-            return br.readLine();  // Resources automatically closed
-        }
-    }
-}
