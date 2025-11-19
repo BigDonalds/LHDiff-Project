@@ -1,0 +1,16 @@
+Reiss scoring system:
+
+"change" means we're matching a line to the wrong line:
+
+<LOCATION ID='L_03' ORIG='5' NEW='5'>
+	  <METHOD ID='U_BEST_DIFF' LINE='3' />
+
+"spurious" means we're matching a line that should have been deleted:
+
+<LOCATION ID='L_04' ORIG='7' NEW='-1'>
+	  <METHOD ID='U_BEST_DIFF' LINE='3' />
+
+"elim" means we think a line was deleted when in fact it's still there.
+
+<LOCATION ID='L_03' ORIG='5' NEW='5'>
+	  <METHOD ID='W_EXACT_LINE#1' LINE='-1' />
