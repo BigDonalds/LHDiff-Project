@@ -5,9 +5,10 @@ from lh_diff.matcher import best_match_for_each_line, resolve_conflicts, detect_
 from lh_diff.evaluator import evaluate_mapping, print_evaluation, save_results_csv, average_results
 from lh_diff.diff_utils import print_diff_summary
 from lh_diff.ground_truth import build_ground_truth
+from typing import List
 
 def infer_file_pairs(data_folder="data") -> dict:
-    filesDictionary: dict[str, list[str]] = dict()
+    filesDictionary: dict[str, List[str]] = dict()
     files = os.listdir(data_folder)
     for file in files:
         path = os.path.join(data_folder, file)
@@ -17,9 +18,9 @@ def infer_file_pairs(data_folder="data") -> dict:
             if filesDictionary.get(base_name):
                 filesDictionary.get(base_name).append(path)
             else:
-                filesDictionary[base_name] = list()
+                filesDictionary[base_name] = List()
                 filesDictionary[base_name].append(path)
-    pop_list = list()
+    pop_list = List()
     for fileGroup in filesDictionary:
         if len(filesDictionary[fileGroup]) < 2:
             pop_list.append(fileGroup)

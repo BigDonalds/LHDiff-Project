@@ -32,7 +32,7 @@ def normalize_line(line: str, remove_comments: bool = True, lowercase: bool = Fa
 
     return line.strip()
 
-def normalize_block_comments(norm_lines:list[str]) -> list[str]:
+def normalize_block_comments(norm_lines:List[str]) -> List[str]:
     # not using for loop as norm_lines will be altered and the length will change
     currentLineIndex = 0
     maxLineIndex = len(norm_lines)
