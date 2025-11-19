@@ -10,7 +10,7 @@ def expand_pairs(mapping: Dict[int, List[int]]) -> set:
     for old_idx, mapped in mapping.items():
 
         # multi-line splits or merges produce a list of new indices
-        if isinstance(mapped, list):
+        if isinstance(mapped, List):
             for n in mapped:
                 pairs.add((old_idx, n))
 
