@@ -1,6 +1,0 @@
-public User getUser(String id) {
-    if (id == null) {
-        throw new IllegalArgumentException("ID cannot be null");
-    }
-    return userRepository.findUserById(id);
-}

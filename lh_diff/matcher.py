@@ -14,7 +14,7 @@ def best_match_for_each_line(old_lines: List[str], new_lines: List[str], candida
 
         # fallback: if few candidates for a long line, brute-force all new lines
         if len(candidates) < 2 and len(old_line) > 8:
-            candidates = list(range(len(new_lines)))
+            candidates = List(range(len(new_lines)))
 
         best_score = 0.0
         best_new_idx = None

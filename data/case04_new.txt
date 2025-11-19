@@ -1,5 +1,0 @@
-public void writeToFile(String data, String filename) {
-    FileWriter writer = new FileWriter(filename);
-    writer.write(data);
-    writer.close();
-}

@@ -1,0 +1,39 @@
+<TEST NAME="TEST6" FILE="CPListLabelProvider.java">
+
+ <VERSION NUMBER="1" CHECKED="TRUE">
+      <LOCATION ORIG="145" NEW="145" />
+      <LOCATION ORIG="146" NEW="146" />
+      <LOCATION ORIG="147" NEW="147" />
+
+      <LOCATION ORIG="148" NEW="148" />
+      <LOCATION ORIG="149" NEW="149" />
+      <LOCATION ORIG="150" NEW="150" />
+      
+      <LOCATION ORIG="151" NEW="151" />
+      <LOCATION ORIG="152" NEW="152" />
+      <LOCATION ORIG="153" NEW="153" />
+
+      <LOCATION ORIG="154" NEW="154" />
+      <LOCATION ORIG="155" NEW="155" />
+      <LOCATION ORIG="156" NEW="156" />
+
+</VERSION>
+
+ <VERSION NUMBER="2" CHECKED="TRUE">
+      <LOCATION ORIG="145" NEW="170" />
+      <LOCATION ORIG="146" NEW="171" />
+      <LOCATION ORIG="147" NEW="138" />
+
+      <LOCATION ORIG="148" NEW="139" />
+      <LOCATION ORIG="149" NEW="-1" />
+      <LOCATION ORIG="150" NEW="140" />
+      
+      <LOCATION ORIG="151" NEW="-1" />
+      <LOCATION ORIG="152" NEW="-1" />
+      <LOCATION ORIG="153" NEW="-1" />
+
+      <LOCATION ORIG="154" NEW="141" />
+      <LOCATION ORIG="155" NEW="-1" />
+      <LOCATION ORIG="156" NEW="142" />
+</VERSION>
+</TEST>

@@ -1,8 +1,0 @@
-public class NetworkClient {
-    public String fetchData(String url) {
-        URLConnection connection = new URL(url).openConnection();
-        InputStream input = connection.getInputStream();
-        // No exception handling for network issues
-        return readStream(input);
-    }
-}
