@@ -18,9 +18,9 @@ def infer_file_pairs(data_folder="data") -> dict:
             if filesDictionary.get(base_name):
                 filesDictionary.get(base_name).append(path)
             else:
-                filesDictionary[base_name] = List()
+                filesDictionary[base_name] = []
                 filesDictionary[base_name].append(path)
-    pop_list = List()
+    pop_list = []
     for fileGroup in filesDictionary:
         if len(filesDictionary[fileGroup]) < 2:
             pop_list.append(fileGroup)
