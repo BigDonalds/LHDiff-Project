@@ -1,0 +1,20 @@
+// TC13_v1.java
+/**
+ * Reporter v1
+ * BUG: missing newline at end of generated reports.
+ */
+public class Reporter {
+    public String report(java.util.List<String> rows) {
+        StringBuilder sb = new StringBuilder();
+        for (String r : rows) {
+            sb.append(r).append(";");
+        }
+        // BUG: no trailing newline
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        Reporter r = new Reporter();
+        System.out.println(r.report(java.util.Arrays.asList("a","b")));
+    }
+}

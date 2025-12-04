@@ -1,0 +1,31 @@
+// TC06_v2.java
+/**
+ * FileHandler v2
+ * FIX: added null guard and throws on bad path
+ */
+public class FileHandler {
+    public FileHandler() {}
+
+    public void open(String path) {
+        if (path == null) {
+            throw new IllegalArgumentException("path cannot be null");
+        }
+        System.out.println("Opening " + path);
+    }
+
+    public void close() {
+        System.out.println("Closed");
+    }
+
+    public boolean exists(String path) {
+        return path != null && path.length() > 0;
+    }
+    public static void main(String[] args) {
+        FileHandler f = new FileHandler();
+        try {
+            f.open(null);
+        } catch (IllegalArgumentException ex) {
+            System.out.println("caught");
+        }
+    }
+}

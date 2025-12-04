@@ -1,0 +1,30 @@
+// TC02_v2.java
+/**
+ * Auth v2
+ * FIX: basic validation added, length checks, null guards.
+ */
+public class Auth {
+    private int minPassLen = 4;
+
+    public Auth() {}
+
+    public boolean login(String user, String pass) {
+        if(user == null || pass == null) return false;
+        if(user.isEmpty() || pass.length() < minPassLen) return false;
+        // simplistic password check (placeholder)
+        return user.length() + pass.length() > 5;
+    }
+
+    public void logout(String user) {
+        System.out.println("logout " + user);
+    }
+
+    public boolean isAdmin(String user) {
+        return "admin".equalsIgnoreCase(user);
+    }
+
+    public static void main(String[] args) {
+        Auth a = new Auth();
+        System.out.println(a.login("u","pass"));
+    }
+}

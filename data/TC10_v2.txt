@@ -1,0 +1,20 @@
+// TC10_v2.java
+/**
+ * ProfileAPI v2
+ * FIX: fallback to 'Guest' for invalid ids.
+ */
+public class ProfileAPI {
+    public String getUser(int id) {
+        if (id <= 0) return "Guest";
+        return "User" + id;
+    }
+
+    public boolean exists(int id) {
+        return id > 0;
+    }
+
+    public static void main(String[] args) {
+        ProfileAPI p = new ProfileAPI();
+        System.out.println(p.getUser(-1)); // Guest
+    }
+}

@@ -1,0 +1,24 @@
+// TC06_v1.java
+/**
+ * FileHandler v1
+ * BUG: open accepts null paths and prints "Opening null"
+ */
+public class FileHandler {
+
+    public void open(String path) {
+        System.out.println("Opening " + path); // BUG: no null check
+    }
+
+    public void close() {
+        System.out.println("Closed");
+    }
+
+    public boolean exists(String path) {
+        return path != null && path.length() > 0;
+    }
+
+    public static void main(String[] args) {
+        FileHandler f = new FileHandler();
+        f.open(null); // problematic
+    }
+}

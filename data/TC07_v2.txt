@@ -1,0 +1,21 @@
+// TC07_v2.java
+/**
+ * DateUtil v2
+ * FIX: correct Gregorian rule for leap years implemented
+ */
+public class DateUtil {
+    public boolean isLeapYear(int year) {
+        if (year % 400 == 0) return true;
+        if (year % 100 == 0) return false;
+        return year % 4 == 0;
+    }
+
+    public String formatDate(int y, int m, int d) {
+        return String.format("%04d-%02d-%02d", y, m, d);
+    }
+
+    public static void main(String[] args) {
+        DateUtil du = new DateUtil();
+        System.out.println(du.isLeapYear(1900)); // correctly false
+    }
+}

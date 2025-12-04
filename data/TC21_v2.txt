@@ -1,0 +1,26 @@
+// TC21_v2.java
+/**
+ * Calc v2
+ * FIX: explicit check and exception thrown on zero denominator.
+ */
+public class Calc {
+    public double div(double a, double b) {
+        if (b == 0.0) {
+            throw new ArithmeticException("divide by zero");
+        }
+        return a / b;
+    }
+
+    public double mul(double a, double b) {
+        return a * b;
+    }
+
+    public static void main(String[] args) {
+        Calc c = new Calc();
+        try {
+            System.out.println(c.div(1.0, 0.0));
+        } catch (ArithmeticException ex) {
+            System.out.println("caught");
+        }
+    }
+}

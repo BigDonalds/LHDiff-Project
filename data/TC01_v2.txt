@@ -1,0 +1,44 @@
+// TC01_v2.java
+/**
+ * Simple Calculator v2
+ * FIX: added divide-by-zero guard and logging
+ */
+public class Calculator {
+    private String name;
+    private boolean debug = true;
+
+    public Calculator() {
+        this.name = "Calc";
+    }
+
+    public int add(int a, int b) {
+        if(debug) System.out.println("add called");
+        return a + b;
+    }
+
+    public int sub(int a, int b) {
+        return a - b;
+    }
+
+    public int mul(int a, int b) {
+        return a * b;
+    }
+
+    // FIX: throw on divide by zero
+    public int div(int a, int b) {
+        if(b == 0) {
+            throw new ArithmeticException("Division by zero");
+        }
+        return a / b;
+    }
+
+    public String tag() {
+        return name + " v2";
+    }
+
+    public static void main(String[] args) {
+        Calculator c = new Calculator();
+        System.out.println(c.tag());
+        System.out.println(c.div(10,2));
+    }
+}

@@ -1,0 +1,26 @@
+// TC20_v2.java
+/**
+ * PlayerProfile v2
+ * added score field and update method
+ */
+public class PlayerProfile {
+    String name;
+    int score;
+
+    public PlayerProfile(String name) {
+        this.name = name;
+        this.score = 0;
+    }
+
+    public void addScore(int s) { score += s; }
+
+    public String display() {
+        return "Player: " + name + " Score: " + score;
+    }
+
+    public static void main(String[] args) {
+        PlayerProfile p = new PlayerProfile("Alex");
+        p.addScore(10);
+        System.out.println(p.display());
+    }
+}

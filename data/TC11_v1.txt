@@ -1,0 +1,22 @@
+// TC11_v1.java
+/**
+ * Config v1
+ * BUG: parse silently ignores malformed lines.
+ */
+public class Config {
+    public java.util.Map<String, String> parse(String content) {
+        java.util.Map<String, String> m = new java.util.HashMap<>();
+        String[] lines = content.split("\n");
+        for (String l : lines) {
+            if (!l.contains("=")) continue; // silently ignore => BUG
+            String[] kv = l.split("=", 2);
+            m.put(kv[0].trim(), kv[1].trim());
+        }
+        return m;
+    }
+
+    public static void main(String[] args) {
+        Config c = new Config();
+        System.out.println(c.parse("a=1\nbadline"));
+    }
+}

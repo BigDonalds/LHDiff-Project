@@ -1,0 +1,21 @@
+// TC22_v2.java
+/**
+ * Manager v2
+ * manage now logs actions.
+ */
+public class Manager {
+
+    public static void main(String[] args) {
+        Manager m = new Manager();
+        m.manage();
+        m.status();
+    }
+
+    public void manage() {
+        System.out.println("managing");
+    }
+
+    public void status() {
+        System.out.println("ok");
+    }
+}

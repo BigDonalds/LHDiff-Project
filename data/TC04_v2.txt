@@ -1,0 +1,41 @@
+// TC04_v2.java
+/**
+ * Player v2
+ * FIX: apply dy to y coordinate.
+ */
+public class Player {
+    private int x;
+    private int y;
+
+    public Player() { x = 0; y = 0; }
+
+    public void move(int dx, int dy) {
+        x += dx;
+        y += dy; // FIXED
+    }
+
+    public String position() {
+        return x + "," + y;
+    }
+
+    public void reset() {
+        x = 0; y = 0;
+    }
+
+    public static void main(String[] args) {
+        Player p = new Player();
+        p.move(3,5);
+        System.out.println(p.position()); // shows 3,5
+    }
+}
+    // filler line 31
+    // filler line 32
+    // filler line 33
+    // filler line 34
+    // filler line 35
+    // filler line 36
+    // filler line 37
+    // filler line 38
+    // filler line 39
+    // filler line 40
+    // filler line 41

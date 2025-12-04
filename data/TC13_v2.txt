@@ -1,0 +1,20 @@
+// TC13_v2.java
+/**
+ * Reporter v2
+ * FIX: ensure newline and nicer formatting.
+ */
+public class Reporter {
+    public String report(java.util.List<String> rows) {
+        StringBuilder sb = new StringBuilder();
+        for (String r : rows) {
+            sb.append(r);
+            sb.append(System.lineSeparator());
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        Reporter r = new Reporter();
+        System.out.println(r.report(java.util.Arrays.asList("a","b")));
+    }
+}

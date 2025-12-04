@@ -1,0 +1,32 @@
+// TC09_v2.java
+/**
+ * Sorter v2
+ * Added descending sort method for Integer arrays.
+ */
+import java.util.Collections;
+
+public class Sorter {
+    public void sort(int[] a) {
+        Arrays.sort(a);
+    }
+
+    public void sortDesc(Integer[] a) {
+        Arrays.sort(a, Collections.reverseOrder());
+    }
+
+    public String join(int[] a) {
+        StringBuilder sb = new StringBuilder();
+        for (int v : a) {
+            if (sb.length()>0) sb.append(',');
+            sb.append(v);
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        Sorter s = new Sorter();
+        Integer[] arr = {3,1,4};
+        s.sortDesc(arr);
+        for (Integer v : arr) System.out.print(v + ",");
+    }
+}

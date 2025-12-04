@@ -1,0 +1,27 @@
+// TC03_v1.java
+/**
+ * Logger v1
+ * FIX: default prefix applied to avoid null concatenation.
+ */
+public class Logger {
+    private String prefix = "[LOG] ";
+
+    public Logger() {}
+
+    public void log(String message) {
+        System.out.println(prefix + message);
+    }
+
+    public void info(String message) {
+        log("[INFO] " + message);
+    }
+
+    public void warn(String message) {
+        log("[WARN] " + message);
+    }
+
+    public static void main(String[] args) {
+        Logger l = new Logger();
+        l.info("starting");
+    }
+}

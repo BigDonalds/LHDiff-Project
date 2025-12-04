@@ -1,0 +1,19 @@
+// TC23_v1.java
+/**
+ * Clock v1
+ * now returns 0 as placeholder.
+ */
+public class Clock {
+    public long now() {
+        return 0L;
+    }
+
+    public String formattedNow() {
+        return java.util.Date.from(java.time.Instant.ofEpochMilli(now())).toString();
+    }
+
+    public static void main(String[] args) {
+        Clock c = new Clock();
+        System.out.println(c.formattedNow());
+    }
+}

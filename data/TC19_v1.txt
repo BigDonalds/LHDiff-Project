@@ -1,0 +1,24 @@
+// TC19_v1.java
+/**
+ * SorterSimple v1
+ * sort is a no-op (bug).
+ */
+public class SorterSimple {
+    public void sort(int[] a) {
+        // BUG: not sorting
+    }
+
+    public boolean isSorted(int[] a) {
+        for (int i = 1; i < a.length; i++) {
+            if (a[i] < a[i-1]) return false;
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        SorterSimple s = new SorterSimple();
+        int[] a = {2,1};
+        s.sort(a);
+        System.out.println(s.isSorted(a));
+    }
+}

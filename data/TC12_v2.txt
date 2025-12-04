@@ -1,0 +1,36 @@
+// TC12_v2.java
+/**
+ * Cache v2
+ * Added naive TTL-based expiration support.
+ */
+public class Cache {
+    private static class Entry {
+        Object value;
+        long expiry; // epoch ms
+        Entry(Object v, long e) { value = v; expiry = e; }
+    }
+
+    private java.util.Map<String, Entry> map = new java.util.HashMap<>();
+
+    public void put(String k, Object v, long ttlMs) {
+        map.put(k, new Entry(v, System.currentTimeMillis() + ttlMs));
+    }
+
+    public Object get(String k) {
+        Entry e = map.get(k);
+        if (e == null) return null;
+        if (System.currentTimeMillis() > e.expiry) {
+            map.remove(k);
+            return null;
+        }
+        return e.value;
+    }
+
+    public int size() { return map.size(); }
+
+    public static void main(String[] args) {
+        Cache c = new Cache();
+        c.put("x", 1, 1000);
+        System.out.println(c.get("x"));
+    }
+}

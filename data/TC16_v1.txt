@@ -1,0 +1,19 @@
+// TC16_v1.java
+/**
+ * Animal v1
+ * speak does nothing by default.
+ */
+public class Animal {
+    public void speak() {
+        // silent
+    }
+
+    public void sleep() {
+        System.out.println("hello");
+    }
+
+    public static void main(String[] args) {
+        Animal a = new Animal();
+        a.sleep();
+    }
+}

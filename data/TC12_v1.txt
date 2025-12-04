@@ -1,0 +1,24 @@
+// TC12_v1.java
+/**
+ * Cache v1
+ * No expiration implemented (stale data risk).
+ */
+public class Cache {
+    private java.util.Map<String, Object> map = new java.util.HashMap<>();
+
+    public void put(String k, Object v) {
+        map.put(k, v);
+    }
+
+    public Object get(String k) {
+        return map.get(k);
+    }
+
+    public int size() { return map.size(); }
+
+    public static void main(String[] args) {
+        Cache c = new Cache();
+        c.put("x", 1);
+        System.out.println(c.get("x"));
+    }
+}

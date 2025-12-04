@@ -1,0 +1,34 @@
+// TC03_v2.java
+/**
+ * Logger v2
+ * ENHANCEMENT: enable flag and setter for prefix, more checks
+ */
+public class Logger {
+    private String prefix = "[LOG] ";
+    private boolean enabled = true;
+
+    public Logger() {}
+
+    public void setPrefix(String p) {
+        if(p != null) prefix = p;
+    }
+
+    public void setEnabled(boolean e) {
+        enabled = e;
+    }
+
+    public void log(String message) {
+        if(!enabled) return;
+        System.out.println(prefix + message);
+    }
+
+    public void info(String message) {
+        log("[INFO] " + message);
+    }
+
+    public static void main(String[] args) {
+        Logger l = new Logger();
+        l.setPrefix("[MY-LOG] ");
+        l.info("ready");
+    }
+}

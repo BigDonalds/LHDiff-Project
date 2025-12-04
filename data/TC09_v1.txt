@@ -1,0 +1,28 @@
+// TC09_v1.java
+/**
+ * Sorter v1
+ * Basic ascending sort
+ */
+import java.util.Arrays;
+
+public class Sorter {
+    public void sort(int[] a) {
+        Arrays.sort(a);
+    }
+
+    public String join(int[] a) {
+        StringBuilder sb = new StringBuilder();
+        for (int v : a) {
+            if (sb.length()>0) sb.append(',');
+            sb.append(v);
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        Sorter s = new Sorter();
+        int[] arr = {3,1,4};
+        s.sort(arr);
+        System.out.println(s.join(arr));
+    }
+}

@@ -1,0 +1,20 @@
+// TC08_v1.java
+/**
+ * Network v1
+ * BUG: send always fails (no retry).
+ */
+public class Network {
+    public boolean send(byte[] payload) {
+        // BUG: placeholder always false (no network)
+        return false;
+    }
+
+    public int defaultTimeout() {
+        return 1000;
+    }
+
+    public static void main(String[] args) {
+        Network n = new Network();
+        System.out.println(n.send(new byte[]{1,2,3}));
+    }
+}

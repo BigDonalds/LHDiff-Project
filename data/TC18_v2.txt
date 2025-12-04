@@ -1,0 +1,25 @@
+// TC18_v2.java
+/**
+ * FIX: throws IllegalArgumentException with clearer message.
+ */
+public class Mail {
+    public void send(String msg) {
+        if (msg == null) throw new IllegalArgumentException("message required");
+        System.out.println("sending " + msg);
+    }
+
+    public static void main(String[] args) {
+        Mail m = new Mail();
+        try {
+            m.send(null);
+        } catch (IllegalArgumentException ex) {
+            System.out.println("caught: " + ex.getMessage());
+    }
+
+    public void schedule(String msg, long when) {
+        // placeholder
+    }
+
+
+    }
+}

@@ -1,0 +1,21 @@
+// TC20_v1.java
+/**
+ * PlayerProfile v1
+ * only name stored
+ */
+public class PlayerProfile {
+    String name;
+
+    public PlayerProfile(String name) {
+        this.name = name;
+    }
+
+    public String display() {
+        return "Player: " + name;
+    }
+
+    public static void main(String[] args) {
+        PlayerProfile p = new PlayerProfile("Alex");
+        System.out.println(p.display());
+    }
+}

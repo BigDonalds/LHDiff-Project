@@ -1,0 +1,19 @@
+// TC10_v1.java
+/**
+ * ProfileAPI v1
+ * BUG: getUser returns null for invalid ids.
+ */
+public class ProfileAPI {
+    public String getUser(int id) {
+        return null; // BUG: no fallback
+    }
+
+    public boolean exists(int id) {
+        return id > 0;
+    }
+
+    public static void main(String[] args) {
+        ProfileAPI p = new ProfileAPI();
+        System.out.println(p.getUser(-1));
+    }
+}

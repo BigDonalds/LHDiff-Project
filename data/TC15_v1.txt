@@ -1,0 +1,23 @@
+// TC15_v1.java
+/**
+ * Stats v1
+ * BUG: sum returns 0 for null arrays silently but other methods assume non-null.
+ */
+public class Stats {
+
+    public int sum(int[] arr) {
+        if (arr == null) return 0; // inconsistent semantics may hide bugs
+        int s = 0;
+        for (int v : arr) s += v;
+        return s;
+    }
+
+    public double mean(int[] arr) {
+        return sum(arr) / (double) arr.length; // will throw if arr==null
+    }
+
+    public static void main(String[] args) {
+        Stats s = new Stats();
+        System.out.println(s.mean(null)); // throws
+    }
+}

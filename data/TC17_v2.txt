@@ -1,0 +1,25 @@
+// TC17_v2.java
+/**
+ * Storage v2
+ * FIX: full returns true when cap <= 0, clearer semantics.
+ */
+public class Storage {
+    int cap = 10;
+
+    public boolean full() {
+        return cap <= 0;
+    }
+
+    public void add() {
+        cap--;
+    }
+
+    public void remove() {
+        cap++;
+    }
+
+    public static void main(String[] args) {
+        Storage s = new Storage();
+        System.out.println(s.full());
+    }
+}

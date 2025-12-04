@@ -1,0 +1,28 @@
+// TC14_v2.java
+/**
+ * Worker v2
+ * Added debug logging and exception handling.
+ */
+public class Worker {
+    public void work() {
+        try {
+            int s = 0;
+            for (int i=0;i<10;i++) {
+                s += i;
+                if (i == 5) System.out.println("midpoint");
+            }
+            System.out.println("result: " + s);
+        } catch (RuntimeException ex) {
+            System.out.println("work error");
+        }
+    }
+
+    public void stop() {
+        System.out.println("stopping");
+    }
+    public static void main(String[] args) {
+        Worker w = new Worker();
+        w.work();
+        System.out.println("done");
+    }
+}

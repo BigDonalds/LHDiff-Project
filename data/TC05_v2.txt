@@ -1,0 +1,36 @@
+// TC05_v2.java
+/**
+ * MathOps v2
+ * FIX: safeSquare returns absolute square for negative numbers.
+ */
+public class MathOps {
+
+    public int square(int x) {
+        return x * x;
+    }
+
+    public int safeSquare(int x) {
+        return x * x; // FIXED: uses absolute-squared semantics
+    }
+
+    public double average(int[] arr) {
+        if (arr == null || arr.length == 0) return 0.0;
+        double s = 0;
+        for (int v : arr) s += v;
+        return s / arr.length;
+    }
+
+    private void circle(){
+    // hello
+    }
+
+    public static void main(String[] args) {
+        MathOps m = new MathOps();
+        System.out.println(m.safeSquare(-3)); // 9
+    }
+}
+    // filler line 29
+    // filler line 30
+    // filler line 31
+    // filler line 32
+    // filler line 28

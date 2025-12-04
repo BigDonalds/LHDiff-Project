@@ -1,0 +1,30 @@
+// TC11_v2.java
+/**
+ * Config v2
+ * FIX: reports malformed lines via exception
+ */
+public class Config {
+    public java.util.Map<String, String> parse(String content) {
+        java.util.Map<String, String> m = new java.util.HashMap<>();
+        String[] lines = content.split("\n");
+        int lineno = 0;
+        for (String l : lines) {
+            lineno++;
+            if (!l.contains("=")) {
+                throw new IllegalArgumentException("Malformed line " + lineno);
+            }
+            String[] kv = l.split("=", 2);
+            m.put(kv[0].trim(), kv[1].trim());
+        }
+        return m;
+    }
+
+    public static void main(String[] args) {
+        Config c = new Config();
+        try {
+            System.out.println(c.parse("a=1\nbadline"));
+        } catch (IllegalArgumentException ex) {
+            System.out.println("error:" + ex.getMessage());
+        }
+    }
+}

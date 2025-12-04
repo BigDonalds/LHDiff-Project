@@ -1,0 +1,19 @@
+// TC07_v1.java
+/**
+ * DateUtil v1
+ * BUG: only checks divisible by 4 for leap years
+ */
+public class DateUtil {
+    public boolean isLeapYear(int year) {
+        return year % 4 == 0; // BUG: incomplete rule
+    }
+
+    public String formatDate(int y, int m, int d) {
+        return y + "-" + m + "-" + d;
+    }
+
+    public static void main(String[] args) {
+        DateUtil du = new DateUtil();
+        System.out.println(du.isLeapYear(1900)); // incorrectly true
+    }
+}

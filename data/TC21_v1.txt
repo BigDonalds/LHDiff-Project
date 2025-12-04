@@ -1,0 +1,19 @@
+// TC21_v1.java
+/**
+ * Calc v1
+ * divide by zero returns Infinity (double division) - but we want exception for safety.
+ */
+public class Calc {
+    public double div(double a, double b) {
+        return a / b; // no check
+    }
+
+    public double mul(double a, double b) {
+        return a * b;
+    }
+
+    public static void main(String[] args) {
+        Calc c = new Calc();
+        System.out.println(c.div(1.0, 0.0)); // Infinity
+    }
+}

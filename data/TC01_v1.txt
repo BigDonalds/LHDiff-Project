@@ -1,0 +1,39 @@
+// TC01_v1.java
+/**
+ * Simple Calculator v1
+ * BUG: div does not check divide-by-zero, returns unsafe result.
+ */
+public class Calculator {
+    private String name;
+
+    public Calculator() {
+        this.name = "Calc";
+    }
+
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public int sub(int a, int b) {
+        return a - b;
+    }
+
+    public int mul(int a, int b) {
+        return a * b;
+    }
+
+    // BUG: no check for b == 0
+    public int div(int a, int b) {
+        return a / b;
+    }
+
+    public String tag() {
+        return name + " v1";
+    }
+
+    public static void main(String[] args) {
+        Calculator c = new Calculator();
+        System.out.println(c.tag());
+        System.out.println(c.add(2,3));
+    }
+}

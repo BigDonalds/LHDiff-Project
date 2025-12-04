@@ -1,0 +1,20 @@
+// TC22_v1.java
+/**
+ * Manager v1
+ * manage does nothing visible.
+ */
+public class Manager {
+    public void manage() {
+        // silent
+    }
+
+    public void status() {
+        System.out.println("ok");
+    }
+
+    public static void main(String[] args) {
+        Manager m = new Manager();
+        m.manage();
+        m.status();
+    }
+}

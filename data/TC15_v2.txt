@@ -1,0 +1,24 @@
+// TC15_v2.java
+/**
+ * Stats v2
+ * FIX: consistent null handling and guard in mean.
+ */
+public class Stats {
+
+    public int sum(int[] arr) {
+        if (arr == null) return 0;
+        int s = 0;
+        for (int v : arr) s += v;
+        return s;
+    }
+
+    public double mean(int[] arr) {
+        if (arr == null || arr.length == 0) return 0.0;
+        return sum(arr) / (double) arr.length;
+    }
+
+    public static void main(String[] args) {
+        Stats s = new Stats();
+        System.out.println(s.mean(null)); // 0.0
+    }
+}

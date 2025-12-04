@@ -1,0 +1,26 @@
+// TC02_v1.java
+/**
+ * Auth v1
+ * BUG: login always returns true (insecure).
+ */
+public class Auth {
+    public Auth() {}
+
+    // insecure stub
+    public boolean login(String user, String pass) {
+        return true;
+    }
+
+    public void logout(String user) {
+        // noop
+    }
+
+    public boolean isAdmin(String user) {
+        return "admin".equals(user);
+    }
+
+    public static void main(String[] args) {
+        Auth a = new Auth();
+        System.out.println(a.login("u","p"));
+    }
+}

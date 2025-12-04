@@ -1,0 +1,20 @@
+// TC18_v1.java
+/**
+ * Mail v1
+ * send throws generic runtime exceptions on null message.
+ */
+public class Mail {
+    public void send(String msg) {
+        if (msg == null) throw new RuntimeException("null");
+        System.out.println("sending " + msg);
+    }
+
+    public void schedule(String msg, long when) {
+        // placeholder
+    }
+
+    public static void main(String[] args) {
+        Mail m = new Mail();
+        m.send(null); // will throw
+    }
+}

@@ -1,0 +1,17 @@
+// TC24_v1.java
+/**
+ * Tag v1
+ * simple label only
+ */
+public class Tag {
+    String label;
+
+    public Tag(String label) { this.label = label; }
+
+    public String display() { return "[" + label + "]"; }
+
+    public static void main(String[] args) {
+        Tag t = new Tag("alpha");
+        System.out.println(t.display());
+    }
+}

@@ -1,0 +1,19 @@
+// TC14_v1.java
+/**
+ * Worker v1
+ * Simple worker with no logs.
+ */
+public class Worker {
+    public void work() {
+        // do work silently
+        int s = 0;
+        for (int i=0;i<10;i++) s += i;
+    }
+
+    public void stop() {}
+    public static void main(String[] args) {
+        Worker w = new Worker();
+        w.work();
+        System.out.println("done");
+    }
+}

@@ -1,0 +1,21 @@
+// TC16_v2.java
+/**
+ * Animal v2
+ * speak prints a default sound to make behavior visible.
+ */
+public class Animal {
+    public void speak() {
+        System.out.println("sound");
+    }
+
+    public void sleep() {
+        System.out.println("zZ");
+    }
+
+    public static void main(String[] args) {
+        Animal a = new Animal();
+        a.sleep();
+	a.speak();
+
+    }
+}

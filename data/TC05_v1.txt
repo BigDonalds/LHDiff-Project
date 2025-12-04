@@ -1,0 +1,33 @@
+// TC05_v1.java
+/**
+ * MathOps v1
+ * BUG: safeSquare returns -1 for negative inputs erroneously.
+ */
+public class MathOps {
+
+    public int square(int x) {
+        return x * x;
+    }
+
+    public int safeSquare(int x) {
+        if (x < 0) return -1; // BUG: wrong behavior
+        return x * x;
+    }
+
+    public double average(int[] arr) {
+        if (arr == null || arr.length == 0) return 0.0;
+        double s = 0;
+        for (int v : arr) s += v;
+        return s / arr.length;
+    }
+
+    public static void main(String[] args) {
+        MathOps m = new MathOps();
+        System.out.println(m.safeSquare(-3));
+    }
+}
+    // filler line 29
+    // filler line 30
+    // filler line 31
+    // filler line 32
+    // filler line 33

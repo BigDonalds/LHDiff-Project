@@ -1,0 +1,18 @@
+// TC25_v1.java
+/**
+ * Loader v1
+ * load is a placeholder that does nothing
+ */
+public class Loader {
+    public void load() {
+        // do nothing
+    }
+
+    public boolean ready() { return false; }
+
+    public static void main(String[] args) {
+        Loader l = new Loader();
+        l.load();
+        System.out.println(l.ready());
+    }
+}

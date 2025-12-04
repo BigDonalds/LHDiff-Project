@@ -1,0 +1,21 @@
+// TC17_v1.java
+/**
+ * Storage v1
+ * full() returns true only when cap==0 (contradictory)
+ */
+public class Storage {
+    int cap = 10;
+
+    public boolean full() {
+        return cap == 0; // odd semantics
+    }
+
+    public void add() {
+        cap--;
+    }
+
+    public static void main(String[] args) {
+        Storage s = new Storage();
+        System.out.println(s.full());
+    }
+}

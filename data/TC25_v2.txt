@@ -1,0 +1,21 @@
+// TC25_v2.java
+/**
+ * Loader v2
+ * load now prints status and sets ready=true
+ */
+public class Loader {
+    private boolean isReady = false;
+
+    public void load() {
+        System.out.println("Loading...");
+        isReady = true;
+    }
+
+    public boolean ready() { return isReady; }
+
+    public static void main(String[] args) {
+        Loader l = new Loader();
+        l.load();
+        System.out.println(l.ready());
+    }
+}

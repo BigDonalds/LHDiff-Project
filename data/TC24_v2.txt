@@ -1,0 +1,22 @@
+// TC24_v2.java
+/**
+ * Tag v2
+ * added value field and richer display
+ */
+public class Tag {
+    String label;
+    String value;
+
+    public Tag(String label) { this.label = label; this.value = ""; }
+    public Tag(String label, String value) { this.label = label; this.value = value; }
+
+    public String display() {
+        if (value == null || value.isEmpty()) return "[" + label + "]";
+        return "[" + label + ":" + value + "]";
+    }
+
+    public static void main(String[] args) {
+        Tag t = new Tag("alpha", "42");
+        System.out.println(t.display());
+    }
+}

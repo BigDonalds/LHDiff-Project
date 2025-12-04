@@ -1,0 +1,20 @@
+// TC23_v2.java
+/**
+ * Clock v2
+ * now returns actual System.currentTimeMillis()
+ */
+public class Clock {
+    public long now() {
+        return System.currentTimeMillis();
+    }
+
+    public static void main(String[] args) {
+        Clock c = new Clock();
+        System.out.println(c.formattedNow());
+    }
+
+    public String formattedNow() {
+        return new java.util.Date(now()).toString();
+    }
+
+}
