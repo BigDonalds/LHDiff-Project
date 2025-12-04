@@ -1,171 +1,101 @@
-import re
-from rapidfuzz.distance import Levenshtein
+"""
+GroundTruth – Loader for manually annotated semantic diff data.
 
-def tokenize(line: str):
-    tokens = set(re.findall(r"[A-Za-z_]\w*|\d+|[{}();,=+\-*/<>!]+", line))
-    common_tokens = {'{', '}', '(', ')', ';', ',', '='}
-    return tokens - common_tokens
+This module reads a single JSON file (`data/ground_truth.json`) that contains
+human-verified line mappings and bug-identifier results for a set of test cases.
 
-def jaccard(a: set, b: set) -> float:
-    if not a and not b:
-        return 1.0
-    inter = len(a & b)
-    union = len(a | b)
-    return inter / union if union else 0
+The ground truth is used to:
+- Evaluate the accuracy of automated diff matchers (DiffMatcher)
+- Measure precision/recall of line-level mappings
+- Validate bug detection logic across refactoring versions
+"""
 
-def structural_fingerprint(line: str) -> int:
-    cleaned = re.sub(r'//.*|".*?"|\'.*?\'', '', line)
-    structural_tokens = re.findall(r'[A-Za-z_]\w*(?=\s*\()|\b(?:if|else|for|while|return|new)\b|[{}();]', cleaned)
-    return hash(tuple(sorted(set(structural_tokens))))
+import os
+import json
+from typing import Dict, List, Any, Tuple
 
-def normalized_levenshtein(a: str, b: str) -> float:
-    if not a and not b:
-        return 1.0
-    dist = Levenshtein.distance(a, b)
-    max_len = max(len(a), len(b))
-    return 1 - (dist / max_len) if max_len > 0 else 0
 
-def is_control_flow_line(line: str) -> bool:
-    return bool(re.search(r'\b(?:if|else|for|while|return|switch|case)\b', line))
+class GroundTruth:
+    """
+    Static utility class.
+    Loads the ground-truth JSON once at import time.
+    """
 
-def is_structural_line(line: str) -> bool:
-    line = line.strip()
-    if len(line) <= 2:
-        return True
-    if line in ['{', '}', '};', '();']:
-        return True
-    if re.match(r'^\s*[{}();]\s*$', line):
-        return True
-    return False
+    # Path to the single source of truth (human-annotated data)
+    _json_file_path = os.path.join("data", "ground_truth.json")
 
-def calculate_semantic_similarity(old_line: str, new_line: str) -> float:
-    old_tokens = tokenize(old_line)
-    new_tokens = tokenize(new_line)
-    
-    token_sim = jaccard(old_tokens, new_tokens)
-    string_sim = normalized_levenshtein(old_line, new_line)
-    
-    old_structural = set(re.findall(r'[A-Za-z_]\w*(?=\s*\()|\b(?:if|else|for|while|return|new)\b', old_line))
-    new_structural = set(re.findall(r'[A-Za-z_]\w*(?=\s*\()|\b(?:if|else|for|while|return|new)\b', new_line))
-    structural_sim = jaccard(old_structural, new_structural)
-    
-    if is_control_flow_line(old_line) and is_control_flow_line(new_line):
-        weights = [0.3, 0.3, 0.4]
-    elif is_structural_line(old_line) and is_structural_line(new_line):
-        weights = [0.2, 0.3, 0.5]
-    else:
-        weights = [0.5, 0.3, 0.2]
-    
-    return (weights[0] * token_sim + 
-            weights[1] * string_sim + 
-            weights[2] * structural_sim)
+    # Load the JSON at import time – if file is missing or malformed, fall back to empty dict
+    try:
+        with open(_json_file_path, "r", encoding="utf-8") as f:
+            GROUND_TRUTH = json.load(f)
+    except Exception as e:
+        print(f"[GroundTruth] Warning: Could not load ground truth from {_json_file_path}: {e}")
+        GROUND_TRUTH = {}
 
-def build_ground_truth(old_lines, new_lines):
-    n_old = len(old_lines)
-    n_new = len(new_lines)
 
-    similarity_matrix = [[0.0] * n_new for _ in range(n_old)]
-    for i in range(n_old):
-        for j in range(n_new):
-            similarity_matrix[i][j] = calculate_semantic_similarity(old_lines[i], new_lines[j])
+    @staticmethod
+    def load_ground_truth(old_file: str, new_file: str) -> Dict[int, List[int]]:
+        """
+        Load the line-level mapping for the given file pair.
 
-    gt = {}
-    used_new_indices = set()
-    
-    for i in range(n_old):
-        for j in range(n_new):
-            if similarity_matrix[i][j] > 0.95 and j not in used_new_indices:
-                gt[i] = [j]
-                used_new_indices.add(j)
-                break
+        Returns:
+            Mapping from old version line numbers (0-based) -> list of new version line numbers.
+            Format expected by the evaluator: { old_index: [new_index, ...] }
 
-    for i in range(n_old):
-        if i in gt:
-            continue
-            
-        old_line = old_lines[i]
-        if is_control_flow_line(old_line) or 'return' in old_line:
-            best_match = None
-            best_score = 0.0
-            
-            for j in range(n_new):
-                if j in used_new_indices:
-                    continue
-                    
-                new_line = new_lines[j]
-                if (is_control_flow_line(new_line) or 'return' in new_line) and similarity_matrix[i][j] > 0.7:
-                    position_penalty = abs(i - j) / 10.0
-                    adjusted_score = similarity_matrix[i][j] * (1 - position_penalty)
-                    
-                    if adjusted_score > best_score:
-                        best_score = adjusted_score
-                        best_match = j
-            
-            if best_match is not None:
-                gt[i] = [best_match]
-                used_new_indices.add(best_match)
+        Example:
+            { 5: [7], 6: [8, 9] }  → line 6 in old file was split into lines 8 and 9 in new file
+        """
+        test_id, old_ver = GroundTruth._extract_version_info(old_file)
+        _, new_ver = GroundTruth._extract_version_info(new_file)
 
-    for i in range(n_old):
-        if i in gt:
-            continue
-            
-        best_match = None
-        best_score = 0.0
+        version_key = f"v{old_ver}-v{new_ver}"
+
+        try:
+            # Expected structure: GROUND_TRUTH[test_id]["lhdiff"][version_key] = [[old, new], ...]
+            mapping_list = GroundTruth.GROUND_TRUTH[test_id]["lhdiff"][version_key]
+        except KeyError:
+            return {}
+
+        # Convert from 1-based (as stored in JSON) -> 0-based (as used internally)
+        return {old - 1: [new - 1] for old, new in mapping_list}
+
+
+    @staticmethod
+    def load_bug_truth(old_file: str, new_file: str) -> Dict[str, Any]:
+        """
+        Load bug-identifier ground truth for this version transition.
+        Returns whatever metadata was stored under "bug_identifier" for this pair
         
-        search_start = max(0, i - 8)
-        search_end = min(n_new, i + 9)
-        
-        for j in range(search_start, search_end):
-            if j in used_new_indices:
-                continue
-                
-            score = similarity_matrix[i][j]
-            position_penalty = abs(i - j) / 20.0
-            adjusted_score = score * (1 - position_penalty)
-            
-            if adjusted_score > best_score and adjusted_score > 0.6:
-                best_score = adjusted_score
-                best_match = j
-        
-        if best_match is not None:
-            gt[i] = [best_match]
-            used_new_indices.add(best_match)
+        Note: This function is a place holder since the assignmnet didnt specify a specific
+        evaluation for bug identifying process. The program still gives detailed report in
+        a text file located in result folder.
+        """
+        test_id, old_ver = GroundTruth._extract_version_info(old_file)
+        _, new_ver = GroundTruth._extract_version_info(new_file)
 
-    for i in range(n_old):
-        if i in gt:
-            continue
-            
-        best_match = None
-        best_score = 0.0
-        
-        for j in range(n_new):
-            if j in used_new_indices:
-                continue
-                
-            score = similarity_matrix[i][j]
-            if score > best_score and score > 0.4:
-                best_score = score
-                best_match = j
-        
-        if best_match is not None:
-            gt[i] = [best_match]
-            used_new_indices.add(best_match)
+        version_key = f"v{old_ver}-v{new_ver}"
 
-    unmapped_count = 0
-    for i in range(n_old):
-        if i not in gt:
-            best_match = None
-            best_score = 0.0
-            
-            for j in range(n_new):
-                score = similarity_matrix[i][j]
-                if score > best_score:
-                    best_score = score
-                    best_match = j
-            
-            if best_match is not None and best_score > 0.3:
-                gt[i] = [best_match]
-            else:
-                unmapped_count += 1
+        # traverse nested dicts – return empty dict if anything is missing
+        return (
+            GroundTruth.GROUND_TRUTH.get(test_id, {})
+            .get("bug_identifier", {})
+            .get(version_key, {})
+        )
 
-    return gt
+    @staticmethod
+    def _extract_version_info(filename: str) -> Tuple[str, str]:
+        """
+        Parse test case ID and version number from filenames like:
+            - mytest_v1.java  → ("mytest", "1")
+            - mytest_v2.java  → ("mytest", "2")
+            - mytest.java     → ("mytest", "1")  (fallback)
+        """
+        base = os.path.basename(filename).split(".")[0]
+
+        if "_v" in base:
+            parts = base.split("_v")
+            test_id = parts[0]
+            version = parts[1]
+            return test_id, version
+
+        return base, "1"
