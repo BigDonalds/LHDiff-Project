@@ -1,35 +1,114 @@
-<h1>COMP-3110 Project - Group 26</h1>
+<h1>LH-Diff</h1>
 
-<h3>General requirements</h3>
+<p>This tool compares different versions of a source file and uses algorithms to analyze where and how code changes. 
+The tool performs two main processes when comparing versions:</p>
+
+<ul>
+    <li><strong>Line Difference Analysis</strong> – determines which lines were changed, deleted, or inserted between versions.</li>
+    <li><strong>Bug Change Analysis</strong> – detects lines that may represent bug fixes or newly introduced bugs.</li>
+</ul>
+
+<p>The tool automatically scans the project’s <code>data/</code> directory, locates files following the naming pattern 
+<code>name_v1.ext</code>, <code>name_v2.ext</code>, etc., and processes each version pair in order.  
+For every comparison, a detailed results file is generated containing the detected changes and bug-related information.</p>
+
+
+<hr>
+
+<h2>Features</h2>
+<ul>
+    <li>Detects line mappings between versions</li>
+    <li>Identifies line changes, insertions, and deletions</li>
+    <li>Supports multi-file batch processing</li>
+    <li>Runs bug analysis on all version pairs</li>
+    <li>Outputs clear and detailed result files</li>
+</ul>
+
+<hr>
+
+<h2>Requirements</h2>
+
+<ul>
+    <li>Install Python</li>
+    <li>Install pip</li>
+    <li>Install dependencies using: pip install -r requirements.txt</li>
+</ul>
+
+<hr>
+
+<h2>Project Structure</h2>
+
+<pre><code>data/                 # Input files
+results/              # Output files will be generated here
+lh_diff/              # Core implementation
+main.py               # Entry point which runs everything
+requirements.txt
+readme.md
+</code></pre>
+
+<hr>
+
+<h2>How to Run</h2>
+
+<p>Execute:</p>
+
+<pre><code>python main.py
+</code></pre>
+
+<p>The tool will:</p>
 <ol>
-    <li>Given two different versions of a file, map which lines of the old file map to which lines in the new file.</li>
-    <li>Evaluate the tool you devveloped in (1) using a new dataset (Contribute a new dataset and evaluate your tool using your dataset and the dataset provided to you). The new dataset should contain the line tracking information of 25 different files.</li>
-    <li>How can you visualize line mapping information?
-    No implementation is needed. The project report (format of the report and instructions for the final submission will be provided) should contain the design of graphical user interfaces that show how to visualize the information.</li>
+    <li>Scan the <code>data/</code> directory</li>
+    <li>Find versioned pairs (v1 -> v2, v2 -> v3, ...)</li>
+    <li>Compare them</li>
+    <li>Generate result files inside <code>results/</code></li>
 </ol>
 
-<h3>Bonus requirements</h3>
+<hr>
+
+<h2>Naming Convention</h2>
+
+<p>Files must follow:</p>
+<pre><code>&lt;name&gt;_v&lt;number&gt;.&lt;ext&gt;
+</code></pre>
+
+<p>Examples:</p>
+<ul>
+    <li>calculator_v1.txt</li>
+    <li>calculator_v2.txt</li>
+</ul>
+
+<p>The tool will automatically pair them.</p>
+
+<hr>
+
+<h2>How It Works</h2>
+
+<p>The comparison pipeline includes:</p>
 <ol>
-    <li>Can you extend your tool to identify bug introducing changes from bug fix changes? (10%)</li>
+    <li>Extract lines from both versions</li>
+    <li>Generate similarity candidates (SimHash)</li>
+    <li>Match old lines to new lines</li>
+    <li>Detect moved, modified, inserted, deleted lines</li>
+    <li>Pass that data to and run bug identification</li>
 </ol>
 
-<h2>Contributing</h2>
-<p>Install requirements with <code>pip install -r requirements.txt</code><p>
-<p>Python block comments (and <strong>doc-strings</strong>) are handled using <code>''' comment '''</code> notation <strong>after</strong> the method signature, for example:</p>
-<pre><code>def superCoolMethod():
-    '''
-    this is officially recognized documentation \n
-    wow spectacular!
-    '''
-    print(1+2)</code></pre>
-<p>and <strong>not</strong> the following:</p>
-<pre><code>'''
-this NOT officially recognized documentation!!!
-'''
-def superCoolMethod():
-    print(1+2)</code></pre>
+<hr>
 
-<p>nor</p>
-<pre><code># this is also NOT officially recognized documentation
-def superCoolMethod():
-    print(1+2)</code></pre>
+<h2>Output</h2>
+
+<p>For each version pair, a file will be created in <code>results/</code>:</p>
+
+<pre><code>&lt;testcase&gt;_vX_to_vY_results.txt
+</code></pre>
+
+<p>Each result file includes:</p>
+<ul>
+    <li>Mapping information</li>
+    <li>Deleted lines</li>
+    <li>Inserted lines</li>
+    <li>Bug fixes found</li>
+    <li>Bug introductions found</li>
+</ul>
+
+<p>Additionally, an <code>evaluation_results.csv</code> file will be generated.  
+This file contains the scoring results for 25 predefined test cases based on the provided <code>groundtruth.json</code>.</p>
